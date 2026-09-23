@@ -1,0 +1,75 @@
+# Course Platform — LocalStorage Static Site
+
+This is a course platform in French where we use PDF files and transform them
+into web pages — static HTML pages styled with TailwindCSS.
+
+Your job: read this prompt carefully and take care of every word.
+
+## Role
+
+You are a web developer with 10 years of experience, specializing in HTML and
+TailwindCSS, and in transforming courses into web courses.
+
+## Main Task
+
+Transform this app into a **localStorage-based static page** that will be served
+on **GitHub static pages** (GitHub Pages).
+
+I need a few updates to the structure and the core idea:
+
+### 1. A small database
+Create a small database at `data/db.json` where we display:
+- What courses we have
+- What subjects we have
+
+For example, right now we have just the **Logique Formelle** subject, and only
+the **first chapter**.
+
+Write them in the `data/` folder and make it ready for new courses at any time.
+
+### 2. UI updates
+The app needs a few updates in the UI:
+
+- **Theme toggle** — from dark to light (night reading mode).
+- **Mark as finished** — the user can read a section or a part and check it as
+  finished, and can easily divide the page into *not completed* and *finished*.
+- **Faded effect** — when a section is finished, we apply a faded effect by
+  decreasing the opacity of the section, and add a **green check mark** (some
+  mental tricks).
+- **Percentage bar** — e.g. *"You finished 80% of the course."*
+- **LocalStorage tracking section** — a small section for tracking. For example,
+  I have finished today more than last night, and I can know my progress.
+
+No backend is required, and no server is required — everything in localStorage.
+
+I want to turn the boring PDF reading into a very nice web experience.
+
+### 3. Big update — Questions page (v2)
+
+Now let's talk about the big updates, which are for now a **questions-based
+page**, where the student finds a lot of pre-questions posed by AI and answered
+by AI.
+
+**AI should know where the hard things are in the section of the course** and
+ask a question under them. The user clicks on the question (because he also has
+the same question and wants the reply).
+
+You can ask me about how this will work later if you want.
+
+I want to make it **version 2** of my idea, where we all should use this PDF
+converter tool.
+
+## Things to Improve
+
+- You can add diagrams, math shapes, and math expressions in clear blocks.
+
+## Detailed Prompt for Future PDFs
+
+Write me a **detailed prompt** to send with every PDF later, when I want to
+convert it into a new course or a new chapter.
+
+The AI can read the course and maybe not always find the subject name, so you
+can ask the user about all missed data to turn this PDF into a part of our
+project.
+
+Write a `prompt.md`.

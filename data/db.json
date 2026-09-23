@@ -1,0 +1,38 @@
+{
+  "subjects": [
+    {
+      "id": "logique-formelle",
+      "title": "Logiques formelles",
+      "institution": "FSM de Monastir",
+      "level": "Licence 1 — Sciences de l'informatique",
+      "year": "2026–2027",
+      "teacher": "Mme Hager Elkamel",
+      "chapters": [
+        {
+          "id": "logique-formelle-ch1",
+          "title": "Chapitre 1 — Introduction à la logique",
+          "path": "logique_formelle/index-1.html",
+          "sections": [
+            { "id": "sec-1", "title": "La logique" },
+            { "id": "sec-2", "title": "Le raisonnement" },
+            { "id": "sec-3", "title": "Le but de la logique" },
+            { "id": "sec-4", "title": "Pourquoi la logique ?" },
+            { "id": "sec-5", "title": "La démarche de la logique" },
+            { "id": "sec-6", "title": "Types de logique" },
+            { "id": "sec-modelisation", "title": "Traduire en formules" },
+            { "id": "sec-7", "title": "Modus Ponens" },
+            { "id": "sec-8", "title": "Modus Tollens" },
+            { "id": "sec-exemples", "title": "Valide ou invalide ?" },
+            { "id": "sec-9", "title": "Les outils de la logique" },
+            { "id": "sec-10", "title": "Applications" },
+            { "id": "sec-11", "title": "Ingrédients d'un système" },
+            { "id": "sec-12", "title": "Logique & langage naturel" },
+            { "id": "sec-plan", "title": "Plan du cours" },
+            { "id": "sec-refs", "title": "Références" },
+            { "id": "sec-exercices", "title": "Exercices" }
+          ]
+        }
+      ]
+    }
+  ]
+}

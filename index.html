@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CourHub — Mes cours</title>
+<meta name="description" content="CourHub — plateforme de cours convertis depuis des PDF, avec suivi de progression 100% local.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⊢</text></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="assets/theme.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: { extend: {
+      colors: {
+        ink: '#16233F', inksoft: '#3E4C6B', paper: '#FBFAF6', panel: '#F1EEE5',
+        rule: '#DAD2BE', gold: '#A9822B', goldsoft: '#F0E6C8',
+        teal: '#2C5A57', tealsoft: '#E3EEEC',
+      },
+      fontFamily: {
+        serif: ['"Source Serif 4"', 'Georgia', 'serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+      },
+    } }
+  }
+</script>
+<style>
+  body { background: #FBFAF6; }
+  .divider-rule { border-color: #DAD2BE; }
+  a.card:hover { border-color: #A9822B; }
+</style>
+</head>
+<body class="font-serif text-ink antialiased">
+
+<header class="border-b divider-rule">
+  <div class="max-w-5xl mx-auto px-6 sm:px-10 py-6 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="font-mono text-gold text-xl">⊢</span>
+      <span class="font-sans font-semibold text-sm tracking-tight">CourHub</span>
+    </div>
+    <button data-theme-toggle aria-label="Basculer le thème" class="theme-toggle"><span class="moon">🌙</span><span class="sun">☀️</span></button>
+  </div>
+</header>
+
+<main class="max-w-5xl mx-auto px-6 sm:px-10 py-14">
+  <p class="font-sans text-[13px] tracking-wide text-gold/90 mb-3">Mes cours</p>
+  <h1 class="font-serif text-3xl sm:text-4xl mb-3">Continuer là où tu t'es arrêté</h1>
+  <p class="font-sans text-inksoft text-[15px] max-w-lg mb-10">Des PDF de cours, transformés en pages web. Ta progression est enregistrée uniquement dans ce navigateur (localStorage) — aucun compte, aucun serveur.</p>
+
+  <div id="overall" class="border divider-rule rounded-sm p-6 mb-12 font-sans hidden">
+    <div class="flex items-baseline justify-between mb-2">
+      <span class="text-inksoft text-sm">Progression globale</span>
+      <span id="overall-pct" class="font-serif text-2xl">0%</span>
+    </div>
+    <div class="ch-progress-track"><div id="overall-fill" class="ch-progress-fill"></div></div>
+    <p id="overall-count" class="text-inksoft/70 text-xs mt-2">0/0 sections terminées</p>
+  </div>
+
+  <div id="subjects" class="space-y-10"></div>
+</main>
+
+<footer class="border-t divider-rule mt-10">
+  <p class="max-w-5xl mx-auto px-6 sm:px-10 py-8 font-sans text-xs text-inksoft/60">Mise en page — Nour Yahyaoui · <a href="https://github.com/Nour-yahyaoui" class="underline">github.com/Nour-yahyaoui</a></p>
+</footer>
+
+<script src="assets/app.js"></script>
+<script>
+  Courhub.initTheme();
+
+  fetch('data/db.json')
+    .then(r => r.json())
+    .then(db => {
+      const subjectsEl = document.getElementById('subjects');
+      const allChapters = [];
+
+      (db.subjects || []).forEach(subject => {
+        allChapters.push(...subject.chapters);
+
+        const block = document.createElement('section');
+        const cards = subject.chapters.map(ch => {
+          const data = Courhub.progress.getProgress(ch.id);
+          const stats = Courhub.progress.computeStats(data, (ch.sections || []).length);
+          return `
+            <a href="${ch.path}" class="card block border divider-rule rounded-sm p-5 sm:p-6 transition-colors">
+              <p class="font-sans text-[11px] text-inksoft/60 mb-2">${subject.title}</p>
+              <h3 class="font-serif text-lg mb-3">${ch.title}</h3>
+              <div class="ch-progress-track mb-2"><div class="ch-progress-fill" style="width:${stats.pct}%"></div></div>
+              <p class="font-sans text-xs text-inksoft/70">${stats.done}/${stats.total} sections · ${stats.pct}%</p>
+            </a>`;
+        }).join('');
+
+        block.innerHTML = `
+          <div class="flex items-baseline justify-between mb-4 font-sans">
+            <h2 class="font-serif text-xl">${subject.title}</h2>
+            <span class="text-inksoft/60 text-xs">${subject.institution} · ${subject.level}</span>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-4">${cards}</div>`;
+        subjectsEl.appendChild(block);
+      });
+
+      if (allChapters.length) {
+        const overall = Courhub.progress.computeOverallStats(allChapters);
+        document.getElementById('overall').classList.remove('hidden');
+        document.getElementById('overall-pct').textContent = overall.pct + '%';
+        document.getElementById('overall-fill').style.width = overall.pct + '%';
+        document.getElementById('overall-count').textContent = overall.done + '/' + overall.total + ' sections terminées';
+      }
+    })
+    .catch(() => {
+      document.getElementById('subjects').innerHTML =
+        '<p class="font-sans text-sm text-inksoft">Impossible de charger data/db.json (sers ce dossier avec un serveur local ou GitHub Pages — le fetch ne fonctionne pas en ouvrant le fichier directement).</p>';
+    });
+</script>
+
+</body>
+</html>

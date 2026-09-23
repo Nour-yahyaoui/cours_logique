@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logiques formelles — Chapitre 1 : Introduction à la logique</title>
+<meta name="description" content="Notes de cours — Logiques formelles, Chapitre 1 : Introduction à la logique. FSM de Monastir, Licence 1 Informatique.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⊢</text></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../assets/theme.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink:      '#16233F',
+          inksoft:  '#3E4C6B',
+          paper:    '#FBFAF6',
+          panel:    '#F1EEE5',
+          rule:     '#DAD2BE',
+          gold:     '#A9822B',
+          goldsoft: '#F0E6C8',
+          teal:     '#2C5A57',
+          tealsoft: '#E3EEEC',
+          rust:     '#9C4A3A',
+          rustsoft: '#F3E3DE',
+        },
+        fontFamily: {
+          serif: ['"Source Serif 4"', 'Georgia', 'serif'],
+          sans:  ['Inter', 'system-ui', 'sans-serif'],
+          mono:  ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+        },
+        maxWidth: { prose: '42rem' },
+      }
+    }
+  }
+</script>
+
+<style>
+  html { scroll-behavior: smooth; scroll-padding-top: 5.5rem; }
+  body { background: #FBFAF6; }
+
+  ::selection { background: #F0E6C8; color: #16233F; }
+
+  /* Sidebar scrollbar, subtle */
+  #sidebar::-webkit-scrollbar { width: 6px; }
+  #sidebar::-webkit-scrollbar-thumb { background: #DAD2BE; border-radius: 3px; }
+
+  .navlink { position: relative; }
+  .navlink[data-active="true"] { color: #16233F; }
+  .navlink[data-active="true"]::before {
+    content: ""; position: absolute; left: -14px; top: 0.35em; width: 6px; height: 6px;
+    border-radius: 999px; background: #A9822B;
+  }
+
+  /* Formula panels */
+  .formula {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    background: #F1EEE5;
+    border-left: 3px solid #A9822B;
+  }
+  .formula-line { border-top: 1px solid #16233F; }
+
+  details > summary { list-style: none; cursor: pointer; }
+  details > summary::-webkit-details-marker { display: none; }
+  details[open] summary .chev { transform: rotate(90deg); }
+  .chev { transition: transform .18s ease; }
+
+  .vrai { color: #2C5A57; }
+  .faux { color: #9C4A3A; }
+
+  .section-num {
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    color: #A9822B;
+  }
+
+  /* mobile drawer */
+  #sidebar { transition: transform .25s ease; }
+  @media (max-width: 1023px) {
+    #sidebar { position: fixed; inset: 0 20% 0 0; transform: translateX(-100%); z-index: 50; }
+    #sidebar.open { transform: translateX(0); }
+    #scrim { position: fixed; inset: 0; background: rgba(22,35,63,.45); opacity: 0; pointer-events: none; transition: opacity .25s ease; z-index: 40; }
+    #scrim.open { opacity: 1; pointer-events: auto; }
+  }
+
+  .divider-rule { border-color: #DAD2BE; }
+
+  table.tbl th, table.tbl td { border-color: #DAD2BE; }
+  table.tbl th { color: #16233F; }
+
+  a.inline-link { text-underline-offset: 3px; text-decoration-color: #DAD2BE; }
+  a.inline-link:hover { text-decoration-color: #A9822B; }
+</style>
+</head>
+
+<body class="font-serif text-ink antialiased">
+
+<!-- ============ MOBILE TOP BAR ============ -->
+<div class="lg:hidden sticky top-0 z-30 bg-paper/95 backdrop-blur border-b divider-rule">
+  <div class="flex items-center justify-between px-4 py-3">
+    <a href="#accueil" class="flex items-center gap-2">
+      <span class="font-mono text-gold text-lg">⊢</span>
+      <span class="font-sans font-semibold text-sm tracking-tight">Logiques formelles</span>
+    </a>
+    <div class="flex items-center gap-2">
+      <span data-progress-pct class="font-sans text-xs text-inksoft">0%</span>
+      <button data-theme-toggle aria-label="Basculer le thème" class="theme-toggle"><span class="moon">🌙</span><span class="sun">☀️</span></button>
+      <button id="navToggle" aria-label="Ouvrir le plan du chapitre" class="font-sans text-xs px-3 py-1.5 border border-rule rounded-sm hover:border-ink transition-colors">
+        Plan du chapitre
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="scrim"></div>
+
+<div class="lg:grid lg:grid-cols-[272px_1fr] lg:max-w-[1400px] lg:mx-auto">
+
+  <!-- ============ SIDEBAR NAV ============ -->
+  <aside id="sidebar" class="bg-paper lg:bg-transparent border-r divider-rule lg:sticky lg:top-0 lg:h-screen overflow-y-auto">
+    <div class="flex items-center justify-between px-6 pt-6 lg:pt-10 pb-4">
+      <a href="#accueil" class="hidden lg:flex items-center gap-2">
+        <span class="font-mono text-gold text-xl">⊢</span>
+        <span class="font-sans font-semibold text-sm">Logiques formelles</span>
+      </a>
+      <button data-theme-toggle aria-label="Basculer le thème" class="theme-toggle hidden lg:inline-flex"><span class="moon">🌙</span><span class="sun">☀️</span></button>
+      <button id="navClose" aria-label="Fermer" class="lg:hidden font-sans text-xl leading-none px-2 text-inksoft">×</button>
+    </div>
+
+    <div class="px-6 pb-6 ch-tracking-box">
+      <div class="flex items-baseline justify-between mb-2">
+        <span class="text-inksoft/70">Progression</span>
+        <span data-progress-pct class="stat-num text-ink">0%</span>
+      </div>
+      <div class="ch-progress-track mb-3"><div data-progress-fill class="ch-progress-fill"></div></div>
+      <div class="flex justify-between text-inksoft/70">
+        <span>Sections <span data-progress-count class="text-ink">0/0</span></span>
+      </div>
+      <div class="flex justify-between mt-2 pt-2 border-t divider-rule text-inksoft/70">
+        <span>Aujourd'hui&nbsp;: <span data-progress-today class="text-ink">0</span></span>
+        <span>Avant&nbsp;: <span data-progress-before class="text-ink">0</span></span>
+      </div>
+    </div>
+
+    <nav class="px-6 pb-16 font-sans text-[13px] leading-relaxed">
+      <p class="text-inksoft/70 mb-2 mt-2">Chapitre 1</p>
+      <ol class="space-y-2 pl-4 border-l divider-rule">
+        <li><a href="#sec-1" class="navlink block hover:text-ink text-inksoft py-0.5">1. La logique</a></li>
+        <li><a href="#sec-2" class="navlink block hover:text-ink text-inksoft py-0.5">2. Le raisonnement</a></li>
+        <li><a href="#sec-3" class="navlink block hover:text-ink text-inksoft py-0.5">3. Le but de la logique</a></li>
+        <li><a href="#sec-4" class="navlink block hover:text-ink text-inksoft py-0.5">4. Pourquoi la logique&nbsp;?</a></li>
+        <li><a href="#sec-5" class="navlink block hover:text-ink text-inksoft py-0.5">5. La démarche de la logique</a></li>
+        <li><a href="#sec-6" class="navlink block hover:text-ink text-inksoft py-0.5">6. Types de logique</a></li>
+        <li><a href="#sec-modelisation" class="navlink block hover:text-ink text-inksoft py-0.5">Traduire en formules</a></li>
+        <li><a href="#sec-7" class="navlink block hover:text-ink text-inksoft py-0.5">7. Modus Ponens</a></li>
+        <li><a href="#sec-8" class="navlink block hover:text-ink text-inksoft py-0.5">8. Modus Tollens</a></li>
+        <li><a href="#sec-exemples" class="navlink block hover:text-ink text-inksoft py-0.5">Valide ou invalide&nbsp;?</a></li>
+        <li><a href="#sec-9" class="navlink block hover:text-ink text-inksoft py-0.5">9. Les outils de la logique</a></li>
+        <li><a href="#sec-10" class="navlink block hover:text-ink text-inksoft py-0.5">10. Applications</a></li>
+        <li><a href="#sec-11" class="navlink block hover:text-ink text-inksoft py-0.5">11. Ingrédients d'un système</a></li>
+        <li><a href="#sec-12" class="navlink block hover:text-ink text-inksoft py-0.5">12. Logique &amp; langage naturel</a></li>
+        <li><a href="#sec-plan" class="navlink block hover:text-ink text-inksoft py-0.5">Plan du cours</a></li>
+        <li><a href="#sec-refs" class="navlink block hover:text-ink text-inksoft py-0.5">Références</a></li>
+        <li><a href="#sec-exercices" class="navlink block hover:text-ink text-inksoft py-0.5">Exercices</a></li>
+      </ol>
+
+      <div class="mt-10 pt-6 border-t divider-rule text-inksoft/80 space-y-1">
+        <p class="text-[11px] text-inksoft/60">Enseignante</p>
+        <p>Mme Hager Elkamel</p>
+        <a href="mailto:Jamoussi.hager@gmail.com" class="inline-link underline block break-all">Jamoussi.hager@gmail.com</a>
+        <p class="text-[11px] text-inksoft/60 mt-3">Code classroom</p>
+        <p class="font-mono">fch2jeuf</p>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div class="min-w-0">
+
+    <!-- HERO -->
+    <header id="accueil" class="relative bg-ink text-paper">
+      <div class="px-6 sm:px-10 lg:px-16 pt-14 pb-16 sm:pt-20 sm:pb-24 max-w-3xl">
+        <p class="font-sans text-[13px] tracking-wide text-gold/90 mb-5">FSM de Monastir · Licence 1 Sciences de l'Informatique · 2026–2027</p>
+        <h1 class="font-serif text-4xl sm:text-5xl leading-[1.1] font-normal mb-3">Logiques formelles</h1>
+        <p class="font-serif italic text-xl sm:text-2xl text-paper/80 mb-8">Chapitre 1 — Introduction à la logique</p>
+        <p class="font-sans text-[15px] leading-relaxed text-paper/70 max-w-lg mb-10">
+          Support de cours réécrit et mis en ligne à partir des diapositives du chapitre 1, avec explications et exemples complémentaires pour faciliter la révision.
+        </p>
+
+        <dl class="font-sans text-sm grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-4 border-t border-paper/15 pt-6 max-w-2xl">
+          <div>
+            <dt class="text-paper/45 text-[11px] mb-1">Enseignante</dt>
+            <dd>Mme Hager Elkamel</dd>
+          </div>
+          <div>
+            <dt class="text-paper/45 text-[11px] mb-1">Contact</dt>
+            <dd><a href="mailto:Jamoussi.hager@gmail.com" class="underline decoration-paper/30 hover:decoration-gold break-all">Jamoussi.hager@gmail.com</a></dd>
+          </div>
+          <div>
+            <dt class="text-paper/45 text-[11px] mb-1">Classroom</dt>
+            <dd class="font-mono">fch2jeuf</dd>
+          </div>
+          <div>
+            <dt class="text-paper/45 text-[11px] mb-1">Année</dt>
+            <dd>2026–2027</dd>
+          </div>
+        </dl>
+
+        <div class="flex flex-wrap gap-4 mt-10">
+          <a href="#sec-1" class="font-sans text-sm bg-gold text-ink px-5 py-2.5 rounded-sm hover:bg-goldsoft transition-colors">Commencer la lecture</a>
+          <a href="#sec-plan" class="font-sans text-sm border border-paper/25 px-5 py-2.5 rounded-sm hover:border-paper/60 transition-colors">Voir le plan du cours</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- ARTICLE -->
+    <article id="reader-article" class="px-6 sm:px-10 lg:px-16 py-14 sm:py-16 max-w-3xl">
+
+      <div class="flex items-center justify-between font-sans text-xs text-inksoft/60 mb-10 pb-4 border-b divider-rule">
+        <span>Section <span data-page-index>1</span> / <span data-page-total>17</span></span>
+        <a href="#accueil" class="hover:text-ink">← Retour au sommaire</a>
+      </div>
+
+      <!-- 1. LA LOGIQUE -->
+      <section id="sec-1" class="mb-16 scroll-mt-24">
+        <p class="section-num text-sm mb-2">01</p>
+        <h2 class="font-serif text-2xl sm:text-3xl mb-6">La logique</h2>
+        <p class="mb-4 leading-relaxed">
+          Le mot <em>logique</em> vient du grec <em>logos</em>, qui signifie à la fois « raison » et « discours ». Étymologiquement, la logique est donc la <strong>science de la raison</strong>.
+        </p>
+        <p class="mb-4 leading-relaxed">
+          Cette science a pour objets d'étude deux choses étroitement liées&nbsp;:
+        </p>
+        <ul class="list-disc pl-6 space-y-1 mb-6 marker:text-gold">
+          <li><strong>le discours</strong> — la manière dont on énonce des idées ;</li>
+          <li><strong>le raisonnement</strong> — la manière dont on enchaîne ces idées pour produire de nouvelles connaissances.</li>
+        </ul>
+        <p class="leading-relaxed text-inksoft">
+          Autrement dit, la logique ne s'intéresse pas d'abord à savoir <em>si</em> une affirmation est vraie, mais à savoir si la façon dont on passe d'une affirmation à une autre est <em>correcte</em>. C'est cette distinction — entre le contenu d'un raisonnement et sa forme — qui structure tout le chapitre.
+        </p>
+      </section>
+
+      <!-- 2. LE RAISONNEMENT -->
+      <section id="sec-2" class="mb-16 scroll-mt-24">
+        <p class="section-num text-sm mb-2">02</p>
+        <h2 class="font-serif text-2xl sm:text-3xl mb-6">Le raisonnement</h2>
+
+        <p class="mb-4 leading-relaxed">
+          Dans toutes les disciplines — mathématiques, informatique, sciences exactes — on a besoin de raisonner sur des objets concrets ou abstraits (nombres, formes géométriques…) possédant des propriétés bien définies. L'informaticien, en particulier, doit être capable de raisonner sur des objets tels que les <strong>programmes</strong>, les <strong>structures de données</strong>, les <strong>systèmes</strong>, les <strong>processus</strong>, les <strong>circuits logiques</strong> ou encore les <strong>réseaux</strong>.
+        </p>
+
+        <p class="mb-8 leading-relaxed">
+          Le raisonnement est une <strong>activité mentale</strong> qui se manifeste par un certain genre de discours, exprimé en langage naturel — par des mots, des phrases et des textes.
+        </p>
+
+        <div class="bg-panel rounded-sm p-5 sm:p-6 mb-8">
+          <p class="font-sans text-[13px] text-inksoft mb-3">Raisonner, c'est produire de l'information — la <strong>conclusion</strong> — à partir</p>
+          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6 font-sans text-sm">
+            <div class="flex-1">
+              <p class="text-gold text-[11px] mb-0.5">information préexistante</p>
+              <p>les prémisses</p>
+            </div>
+            <span class="text-inksoft/40 hidden sm:inline">+</span>
+            <div class="flex-1">
+              <p class="text-gold text-[11px] mb-0.5">mécanismes de transformation</p>
+              <p>les règles d'inférence</p>
+            </div>
+            <span class="text-inksoft/40 hidden sm:inline">→</span>
+            <div class="flex-1">
+              <p class="text-gold text-[11px] mb-0.5">résultat</p>
+              <p>la conclusion</p>
+            </div>
+          </div>
+        </div>
+
+        <p class="mb-3 leading-relaxed">Un raisonnement se présente traditionnellement sous forme d'hypothèses (ou prémisses) suivies d'une conclusion&nbsp;:</p>
+
+        <div class="formula rounded-sm px-5 py-4 mb-3 text-sm">
+          <p class="text-inksoft/70 mb-2">« S'il pleut, la route est mouillée, or la route n'est pas mouillée, donc il ne pleut pas. »</p>
+          <table class="w-full text-left">
+            <tr><td class="pr-4 text-gold align-top">H1</td><td>S'il pleut, la route est mouillée.</td><td class="text-inksoft/50 text-right whitespace-nowrap">prémisses</td></tr>
+            <tr><td class="pr-4 text-gold align-top">H2</td><td>la route n'est pas mouillée.</td><td></td></tr>
+            <tr class="formula-line"><td class="pr-4 text-gold pt-2 align-top">C</td><td class="pt-2">il ne pleut pas.</td><td class="text-inksoft/50 text-right whitespace-nowrap pt-2">conclusion</td></tr>
+          </table>
+        </div>
+
+        <p class="text-sm text-inksoft/70 mb-10">On retrouvera ce même exemple, une fois traduit en formules, à la section « Traduire en formules ».</p>
+
+        <h3 class="font-sans font-semibold text-sm tracking-wide text-inksoft mb-4">Trois raisonnements à comparer</h3>
+        <div class="space-y-3 mb-10">
+          <div class="border divider-rule rounded-sm p-4 sm:p-5">
+            <p class="font-sans text-[11px] text-teal mb-1">Raisonnement 1</p>
+            <p class="text-[15px]">« S'il pleut, la route est mouillée, or il pleut, donc la route est mouillée. »</p>
+          </div>
+          <div class="border divider-rule rounded-sm p-4 sm:p-5">
+            <p class="font-sans text-[11px] text-teal mb-1">Raisonnement 2</p>
+            <p class="text-[15px]">« S'il pleut, la route est mouillée, or la route n'est pas mouillée, donc il ne pleut pas. »</p>
+          </div>
+          <div class="border divider-rule rounded-sm p-4 sm:p-5">
+            <p class="font-sans text-[11px] text-teal mb-1">Raisonnement 3</p>
+            <p class="text-[15px]">« Pour sortir sous la pluie, je prends mon parapluie ; je suis dehors sans parapluie, donc il ne pleut pas. »</p>
+          </div>
+        </div>
+
+        <p class="mb-4 leading-relaxed">
+          Ces trois raisonnements ont la même « forme » d'implication en arrière-plan. Le raisonnement 1 confirme l'antécédent (c'est le schéma du <a href="#sec-7" class="inline-link underline">modus ponens</a>), tandis que les raisonnements 2 et 3 nient le conséquent pour conclure à la négation de l'antécédent (le schéma du <a href="#sec-8" class="inline-link underline">modus tollens</a>). Les deux schémas sont valides — nous verrons plus loin qu'un troisième schéma, qui leur ressemble, ne l'est pas.
+        </p>
+
+        <h3 class="font-sans font-semibold text-sm tracking-wide text-inksoft mb-4 mt-10">Qualité d'un raisonnement</h3>
+        <p class="mb-4 leading-relaxed">
+          Un raisonnement possède une qualité principale qui n'a que deux degrés possibles&nbsp;: il est <strong class="vrai">correct</strong>, ce qu'on appelle aussi <strong class="vrai">valide</strong>, ou bien il ne l'est pas — il est <strong class="faux">invalide</strong>.
+        </p>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div class="bg-tealsoft rounded-sm p-4 sm:p-5">
+            <p class="font-sans text-[11px] text-teal mb-1">Raisonnement valide</p>
+            <p class="text-[15px]">« S'il pleut, la route est mouillée, or il pleut, donc la route est mouillée. »</p>
+          </div>
+          <div class="bg-rustsoft rounded-sm p-4 sm:p-5">
+            <p class="font-sans text-[11px] text-rust mb-1">Raisonnement invalide</p>
+            <p class="text-[15px]">« S'il pleut, la route est mouillée, or il ne pleut pas, donc la route n'est pas mouillée. »</p>
+          </div>
+        </div>
+        <p class="text-sm text-inksoft/70 mt-4 leading-relaxed">
+          Ce dernier exemple nie l'<em>antécédent</em> plutôt que le conséquent — un schéma qui, contrairement au modus tollens, n'est pas valide : la route peut très bien être mouillée pour une autre raison (arrosage, lavage…) même s'il ne pleut pas.
+        </p>
+      </section>
+
+      <!-- 3. LE BUT -->
+      <section id="sec-3" class="mb-16 scroll-mt-24">
+        <p class="section-num text-sm mb-2">03</p>
+        <h2 class="font-serif text-2xl sm:text-3xl mb-6">Le but de la logique</h2>
+        <p class="mb-4 leading-relaxed">
+          Le but de la logique est de <strong>caractériser les raisonnements valides</strong> — plus précisément, les logiciens se sont intéressés aux <strong>propriétés formelles</strong> des raisonnements valides, c'est-à-dire à ce qui les rend corrects indépendamment du sujet dont ils parlent.
+        </p>
+        <p class="leading-relaxed text-inksoft">
+          Les règles de la logique permettent d'effectuer des raisonnements valides non pas de la manière informelle et incertaine usuelle, mais de façon <strong>formelle</strong> : en appliquant des règles précises de manipulation de symboles, qui ne laissent aucune place à l'ambiguïté ni à l'erreur.
+        </p>
+      </section>
+
+      <!-- 4. POURQUOI -->
+      <section id="sec-4" class="mb-16 scroll-mt-24">
+        <p class="section-num text-sm mb-2">04</p>
+        <h2 class="font-serif text-2xl sm:text-3xl mb-6">Pourquoi la logique&nbsp;?</h2>
+
+        <h3 class="font-sans font-semibold text-sm tracking-wide text-inksoft mb-4">1. Besoin de formalisation du langage</h3>
+        <p class="mb-4 leading-relaxed">
+          Un raisonnement est exprimé en langage naturel, par des mots, des phrases et des textes. Or les langues naturelles ne sont pas adaptées au raisonnement formel, pour trois raisons.
+        </p>
+
+        <p class="mb-2 leading-relaxed"><strong>Elles contiennent de nombreuses ambiguïtés</strong> — on n'est pas toujours sûr de la sémantique d'un énoncé&nbsp;:</p>
+        <ul class="list-disc pl-6 space-y-1.5 mb-5 marker:text-gold text-[15px]">
+          <li>« nous avons des jumelles à la maison » — deux filles, ou des lunettes optiques&nbsp;?</li>
+          <li>« il a trouvé un avocat » — le professionnel du droit, ou le fruit&nbsp;?</li>
+          <li class="text-inksoft/80">« je vois l'homme avec le télescope » — qui tient le télescope, moi ou lui&nbsp;? <span class="text-[13px]">(exemple complémentaire)</span></li>
+        </ul>
+
+        <p class="mb-2 leading-relaxed"><strong>Il est difficile de connaître la véracité d'un énoncé</strong>&nbsp;:</p>
+        <ul class="list-disc pl-6 space-y-1.5 mb-5 marker:text-gold text-[15px]">
+          <li>« il pleuvra demain » — vrai ou faux dépend d'un futur incertain ;</li>
+          <li>« Aline est belle » — dépend d'un jugement subjectif ;</li>
+          <li>« la logique, c'est dur » — dépend de la personne qui juge.</li>
+        </ul>
+
+        <p class="mb-2 leading-relaxed"><strong>Elles permettent d'énoncer des choses paradoxales</strong>&nbsp;:</p>
+        <ul class="list-disc pl-6 space-y-1.5 mb-8 marker:text-gold text-[15px]">
+          <li>« Je mens » — comme pour tout paradoxe de ce type, on aboutit à la conclusion que si c'est vrai, alors c'est faux… et inversement ;</li>
+          <li>« Je suis certain qu'il n'y a rien de certain » — une phrase qui se contredit elle-même.</li>
+        </ul>
+
+        <h3 class="font-sans font-semibold text-sm tracking-wide text-inksoft mb-4">2. Besoin de formalisation du raisonnement</h3>
+        <p class="mb-4 leading-relaxed">
+          Ce qui intéresse les logiciens, c'est le raisonnement lui-même — en particulier la définition de <strong>systèmes formels</strong> permettant de le mécaniser. Au début du XX<sup>e</sup> siècle, le rêve du logicien est de faire de la logique un calcul, et de mécaniser le raisonnement, et par suite toutes les mathématiques.
+        </p>
+        <div class="bg-panel rounded-sm p-5 sm:p-6">
+          <p class="font-sans text-[11px] text-inksoft/60 mb-3">Trois questions fondatrices</p>
+          <ul class="space-y-2 text-[15px]">
+            <li>Qu'est-ce qu'un raisonnement&nbsp;?</li>
+            <li>Peut-on s'assurer de la cohérence des raisonnements&nbsp;?</li>
+            <li>Peut-on mécaniser le raisonnement&nbsp;?</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 5. DEMARCHE -->
+      <section id="sec-5" class="mb-16 scroll-mt-24">
+        <p class="section-num text-sm mb-2">05</p>
+        <h2 class="font-serif text-2xl sm:text-3xl mb-6">La démarche de la logique</h2>
+        <p class="mb-6 leading-relaxed">La démarche de la logique consiste en trois étapes successives&nbsp;:</p>
+
+        <ol class="space-y-5 mb-10">
+          <li class="flex gap-4">
+            <span class="font-serif italic text-gold text-lg leading-none pt-0.5">1</span>
+            <p class="leading-relaxed">considérer des <strong>raisonnements</strong> et tenter de mettre en évidence leurs propriétés de validité, en faisant abstraction des éléments non pertinents ;</p>
+          </li>
+          <li class="flex gap-4">
+            <span class="font-serif italic text-gold text-lg leading-none pt-0.5">2</span>
+            <p class="leading-relaxed">essayer de <strong>modéliser et formaliser</strong> l'expression de la pensée — une phrase, un raisonnement, un discours — dite en langage naturel, à l'aide de symboles (formules) qui se prêtent à un calcul mathématique ;</p>
+          </li>
+          <li class="flex gap-4">
+            <span class="font-serif italic text-gold text-lg leading-none pt-0.5">3</span>
+            <p class="leading-relaxed">attribuer une <strong>valeur de vérité</strong> à cette phrase, à ce raisonnement ou à ce discours.</p>
+          </li>
+        </ol>
+
+        <!-- diagram -->
+        <div class="border divider-rule rounded-sm p-5 sm:p-7 mb-10 overflow-x-auto">
+          <div class="flex items-stretch gap-2 sm:gap-4 min-w-[560px] font-sans text-sm">
+            <div class="flex-1 border divider-rule rounded-sm p-4 text-center">
+              <p class="font-semibold mb-1">Raisonnement à valider</p>
+              <p class="text-inksoft/70 text-[13px]">{Phrases}<br>langage naturel<br>mots, textes</p>
+            </div>
+            <div class="flex flex-col items-center justify-center text-center px-1">
+              <span class="text-gold text-lg">→</span>
+              <p class="text-[11px] text-inksoft/60 whitespace-nowrap">représentation /<br>modélisation</p>
+            </div>
+            <div class="flex-1 border divider-rule rounded-sm p-4 text-center">
+              <p class="font-semibold mb-1">Raisonnement modélisé</p>
+              <p class="text-inksoft/70 text-[13px]">{Formules}<br>langage logique<br>symboles</p>
+            </div>
+            <div class="flex flex-col items-center justify-center text-center px-1">
+              <span class="text-gold text-lg">→</span>
+              <p class="text-[11px] text-inksoft/60 whitespace-nowrap">calcul logique /<br>mécanismes de calcul</p>
+            </div>
+            <div class="flex-1 border divider-rule rounded-sm p-4 text-center flex items-center justify-center">
+              <p class="font-semibold">Valide&nbsp;?</p>
+            </div>
+          </div>
+        </div>
+
+        <p class="leading-relaxed">
+          La logique est donc un <strong>langage</strong> — un formalisme de représentation symbolique des connaissances — combiné à des <strong>mécanismes de manipulation syntaxique</strong> qui permettent de raisonner sur la sémantique. Ce langage repose sur deux notions importantes&nbsp;:
+        </p>
+        <ul class="list-disc pl-6 space-y-1.5 mt-3 mb-4 marker:text-gold">
+          <li><strong>la syntaxe</strong> : quelles sont les expressions possibles&nbsp;?</li>
+          <li><strong>la sémantique</strong> : quelle est la signification d'une expression, sa valeur de vérité&nbsp;?</li>
+        </ul>
+        <p class="text-inksoft leading-relaxed">On obtient ainsi un <strong>système informatique de raisonnement par manipulation de symboles</strong> — l'ambition, encore aujourd'hui, derrière tout démonstrateur automatique.</p>
+      </section>
+
+      <!-- 6. TYPES -->
+      <section id="sec-6" class="mb-16 scroll-mt-24">
+        <p class="section-num text-sm mb-2">06</p>
+        <h2 class="font-serif text-2xl sm:text-3xl mb-6">Les différents types de logique</h2>
+
+        <div class="grid sm:grid-cols-2 gap-4 mb-8">
+          <div class="border divider-rule rounded-sm p-5">
+            <p class="font-sans font-semibold text-sm mb-3">Logiques classiques <span class="text-inksoft/50 font-normal">— logiques mathématiques</span></p>
+            <ul class="space-y-1 text-[15px]">
+              <li>Logique propositionnelle</li>
+              <li>Logique de prédicats</li>
+            </ul>
+          </div>
+          <div class="border divider-rule rounded-sm p-5">
+            <p class="font-sans font-semibold text-sm mb-3">Logiques non classiques</p>
+            <ul class="space-y-1 text-[15px]">
+              <li>Logique de croyance</li>
+              <li>Logique temporelle</li>
+              <li>Logique non-monotone</li>
+              <li>Logique floue</li>
+            </ul>
+          </div>
+        </div>
+
+        <p class="mb-4 leading-relaxed">
+          Ce cours est une introduction à la <strong>logique symbolique</strong> — on dit aussi la logique mathématique, ou la logique classique. La logique mathématique est une discipline des mathématiques qui s'est beaucoup développée à la fin du XIX<sup>e</sup> siècle avec les travaux de <strong>Boole</strong>, <strong>De Morgan</strong> et <strong>Frege</strong>, mais dont le grand essor a eu lieu au début du XX<sup>e</sup> siècle, grâce aux travaux de <strong>Hilbert</strong>, <strong>Russell</strong>, <strong>Whitehead</strong>, puis <strong>Gödel</strong> — pour donner, entre autres, la théorie des ensembles.
+        </p>
+        <p class="mb-4 leading-relaxed">
+          Le but de la logique classique est de modéliser et de formaliser le raisonnement mathématique.
+        </p>
+        <p class="leading-relaxed text-inksoft">
+          L'informatique a fait « renaître » le domaine de la logique&nbsp;: pour modéliser le monde réel — l'incertitude, le temps, la croyance des agents — nous avons besoin de concepts logiques plus avancés, connus sous le nom de <strong>logiques non classiques</strong>.
+        </p>
+      </section>
+
+      <!-- TRADUIRE EN FORMULES -->
+      <section id="sec-modelisation" class="mb-16 scroll-mt-24">
+        <p class="font-sans text-[11px] tracking-wide text-inksoft/50 mb-2">Entre les sections 6 et 7</p>
+        <h2 class="font-serif text-2xl sm:text-3xl mb-6">Traduire un raisonnement en formules</h2>
+        <p class="mb-8 leading-relaxed">
+          Avant de voir les règles d'inférence proprement dites, voici comment on applique concrètement l'étape 2 de la démarche logique&nbsp;: remplacer les phrases par des symboles.
+        </p>
+
+        <h3 class="font-sans font-semibold text-sm tracking-wide text-inksoft mb-3">En logique de propositions</h3>
+        <p class="mb-3 text-[15px]">« S'il pleut, la route est mouillée, or il pleut, donc la route est mouillée. »</p>
+        <p class="mb-3 text-sm text-inksoft/80">On pose <span class="font-mono">P</span> : « il pleut » et <span class="font-mono">R</span> : « la route est mouillée ».</p>
+        <div class="formula rounded-sm px-5 py-4 mb-8 text-sm">
+          <table class="w-full text-left">
+            <tr><td class="pr-4 text-gold">H1 = (P ⇒ R)</td><td class="text-inksoft/50 text-right">prémisses</td></tr>
+            <tr><td class="pr-4 text-gold">H2 = P</td><td></td></tr>
+            <tr class="formula-line"><td class="pr-4 text-gold pt-2">C&nbsp;&nbsp;&nbsp;= R</td><td class="text-inksoft/50 text-right pt-2">conclusion</td></tr>
+          </table>
+        </div>
+
+        <p class="mb-3 text-[15px]">« S'il pleut, la route est mouillée, or la route n'est pas mouillée, donc il ne pleut pas. »</p>
+        <div class="formula rounded-sm px-5 py-4 mb-8 text-sm">
+          <table class="w-full text-left">
+            <tr><td class="pr-4 text-gold">(P ⇒ R)</td><td class="text-inksoft/50 text-right">prémisses</td></tr>
+            <tr><td class="pr-4 text-gold">¬R</td><td></td></tr>
+            <tr class="formula-line"><td class="pr-4 text-gold pt-2">¬P</td><td class="text-inksoft/50 text-right pt-2">conclusion</td></tr>
+          </table>
+        </div>
+
+        <h3 class="font-sans font-semibold text-sm tracking-wide text-inksoft mb-3">En logique de prédicats</h3>
+        <p class="mb-3 text-[15px]">« Tous les hommes sont mortels, or Socrate est un homme, donc il est mortel. »</p>
+        <p class="mb-3 text-sm text-inksoft/80">
+          Ici, une simple proposition atomique ne suffit plus : il faut entrer <em>à l'intérieur</em> de la proposition, pour parler d'un individu <span class="font-mono">x</span> quelconque. On pose <span class="font-mono">H(x)</span> : « x est un homme » et <span class="font-mono">M(x)</span> : « x est mortel ».
+        </p>
+        <div class="formula rounded-sm px-5 py-4 text-sm">
+          <table class="w-full text-left">
+            <tr><td class="pr-4 text-gold whitespace-nowrap">∀x ( H(x) ⇒ M(x) )</td><td class="text-inksoft/50 text-right">prémisses</td></tr>
+            <tr><td class="pr-4 text-gold">H(Socrate)</td><td></td></tr>
+            <tr class="formula-line"><td class="pr-4 text-gold pt-2">M(Socrate)</td><td class="text-inksoft/50 text-right pt-2">conclusion</td></tr>
+          </table>
+        </div>
+        <p class="text-sm text-inksoft/70 mt-3">La logique de prédicats sera l'objet de la Partie II de ce cours (chapitres 5 à 7).</p>
+      </section>
+
+      <!-- 7. MODUS PONENS -->
+      <section id="sec-7" class="mb-16 scroll-mt-24">
+        <p class="section-num text-sm mb-2">07</p>
+        <h2 class="font-serif text-2xl sm:text-3xl mb-6">Règle d'inférence&nbsp;: Modus Ponens</h2>
+
+        <p class="mb-6 leading-relaxed">
+          En logique, une <strong>règle d'inférence</strong> est une règle qui permet de déduire une conclusion à partir d'une ou plusieurs prémisses&nbsp;: c'est un mécanisme formel qui indique comment passer d'énoncés déjà connus à un nouvel énoncé.
+        </p>
+
+        <p class="mb-4 leading-relaxed">
+          Une manière de raisonner qui correspond à notre intuition est admise sous le nom de règle du <strong>modus ponens</strong>&nbsp;:
+        </p>
+
+        <div class="formula rounded-sm px-5 py-4 mb-3 text-center text-base sm:text-lg">
+          P , (P ⇒ Q) ⊢ Q
+        </div>
+        <p class="text-sm text-inksoft/70 mb-8">« P implique Q, et P sont déclarés vrais, donc Q doit être vrai. »</p>
+
+        <div class="border divider-rule rounded-sm p-5 sm:p-6">
+          <p class="font-sans text-[11px] text-inksoft/60 mb-2">Exemple</p>
+          <p class="mb-4 text-[15px] leading-relaxed">« Si tous les étudiants assistent aux cours d'informatique, alors ils auront leurs examens ; or tous les étudiants assistent aux cours d'informatique ; donc tous les étudiants auront leurs examens. »</p>
+          <p class="text-sm text-inksoft/80 mb-3">
+            Avec <span class="font-mono">P</span> = « tous les étudiants assistent aux cours d'informatique » et <span class="font-mono">Q</span> = « tous les étudiants auront leurs examens »&nbsp;:
+          </p>
+          <div class="formula rounded-sm px-5 py-4 text-sm mb-3">
+            <table class="w-full text-left">
+              <tr><td class="pr-4 text-gold">(P ⇒ Q)</td><td class="text-inksoft/50 text-right">prémisses</td></tr>
+              <tr><td class="pr-4 text-gold">P</td><td></td></tr>
+              <tr class="formula-line"><td class="pr-4 text-gold pt-2">Q</td><td class="text-inksoft/50 text-right pt-2">conclusion</td></tr>
+            </table>
+          </div>
+          <p class="text-sm vrai font-sans">Selon la règle de modus ponens, ce raisonnement est valide.</p>
+        </div>
+
+        <details class="ai-question mt-6 p-4 sm:p-5">
+          <summary class="flex items-center justify-between gap-4 font-sans text-sm">
+            <span>💡 Question fréquente&nbsp;: pourquoi ne peut-on pas déduire <span class="font-mono">P</span> à partir de <span class="font-mono">Q</span> et <span class="font-mono">(P ⇒ Q)</span>&nbsp;?</span>
+            <span class="chev text-gold shrink-0">›</span>
+          </summary>
+          <p class="text-sm text-inksoft leading-relaxed mt-3">C'est le piège classique du modus ponens&nbsp;: l'implication <span class="font-mono">P ⇒ Q</span> ne dit rien sur ce qui se passe quand <span class="font-mono">P</span> est faux — <span class="font-mono">Q</span> peut très bien être vrai pour une tout autre raison. Conclure <span class="font-mono">P</span> à partir de <span class="font-mono">Q</span> seul s'appelle « affirmer le conséquent », et ce n'est <strong>pas</strong> une règle valide (voir la section « Valide ou invalide ? » un peu plus bas).</p>
+        </details>
+      </section>
+
+      <!-- 8. MODUS TOLLENS -->
+      <section id="sec-8" class="mb-16 scroll-mt-24">
+        <p class="section-num text-sm mb-2">08</p>
+        <h2 class="font-serif text-2xl sm:text-3xl mb-6">Règle d'inférence&nbsp;: Modus Tollens</h2>
+
+        <p class="mb-4 leading-relaxed">Une seconde règle de déduction, le <strong>modus tollens</strong>, s'écrit&nbsp;:</p>
+
+        <div class="formula rounded-sm px-5 py-4 mb-3 text-center text-base sm:text-lg">
+          ¬Q , (P ⇒ Q) ⊢ ¬P
+        </div>
+        <p class="text-sm text-inksoft/70 mb-8">« Si P implique Q est vrai, et si Q est faux, alors P est faux. »</p>
+
+        <div class="border divider-rule rounded-sm p-5 sm:p-6">
+          <p class="font-sans text-[11px] text-inksoft/60 mb-2">Exemple</p>
+          <p class="mb-1 text-[15px]"><strong>Hypothèses</strong> (information préexistante)&nbsp;:</p>
+          <ul class="list-disc pl-6 mb-4 text-[15px] marker:text-gold">
+            <li>Pour sortir sous la pluie, je prends mon parapluie.</li>
+            <li>Je suis dehors sans parapluie.</li>
+          </ul>
+          <p class="mb-4 text-[15px]"><strong>Conclusion</strong> : il ne pleut pas.</p>
+          <p class="text-sm text-inksoft/80 mb-3">
+            On instancie <span class="font-mono">A</span> = « il pleut » et <span class="font-mono">B</span> = « je sors muni d'un parapluie »&nbsp;:
+          </p>
+          <div class="formula rounded-sm px-5 py-4 text-sm mb-3">
+            <table class="w-full text-left">
+              <tr><td class="pr-4 text-gold">(A ⇒ B)</td><td class="text-inksoft/50 text-right">prémisses</td></tr>
+              <tr><td class="pr-4 text-gold">¬B</td><td></td></tr>
+              <tr class="formula-line"><td class="pr-4 text-gold pt-2">¬A</td><td class="text-inksoft/50 text-right pt-2">conclusion</td></tr>
+            </table>
+          </div>
+          <p class="text-sm text-inksoft/80 font-sans">L'information nouvelle obtenue — « il ne pleut pas » — s'obtient en appliquant le modus tollens : ¬Q, (P ⇒ Q) ⊢ ¬P.</p>
+        </div>
+
+        <details class="ai-question mt-6 p-4 sm:p-5">
+          <summary class="flex items-center justify-between gap-4 font-sans text-sm">
+            <span>💡 Question fréquente&nbsp;: en quoi le modus tollens est-il différent de « nier l'antécédent »&nbsp;?</span>
+            <span class="chev text-gold shrink-0">›</span>
+          </summary>
+          <p class="text-sm text-inksoft leading-relaxed mt-3">Le modus tollens part de <span class="font-mono">¬Q</span> (la conclusion de l'implication est fausse) pour conclure <span class="font-mono">¬P</span> — c'est valide. « Nier l'antécédent » part au contraire de <span class="font-mono">¬P</span> pour conclure <span class="font-mono">¬Q</span>, ce qui n'est <strong>pas</strong> valide&nbsp;: <span class="font-mono">Q</span> peut rester vrai pour une autre raison même si <span class="font-mono">P</span> est faux. Le sens dans lequel on lit l'implication change tout.</p>
+        </details>
+      </section>
+
+      <!-- VALIDE / INVALIDE -->
+      <section id="sec-exemples" class="mb-16 scroll-mt-24">
+        <p class="font-sans text-[11px] tracking-wide text-inksoft/50 mb-2">Entre les sections 8 et 9</p>
+        <h2 class="font-serif text-2xl sm:text-3xl mb-6">Reconnaître un raisonnement valide</h2>
+        <p class="mb-6 leading-relaxed">Modus ponens et modus tollens sont valides quel que soit le contenu de P et Q. Mais deux schémas qui leur ressemblent — <em>affirmer le conséquent</em> et <em>nier l'antécédent</em> — ne le sont pas, même si leur conclusion « sonne » juste.</p>
+
+        <div class="grid sm:grid-cols-2 gap-0 border divider-rule rounded-sm overflow-hidden">
+          <div class="p-5 sm:p-6 bg-tealsoft">
+            <p class="font-sans font-semibold text-sm text-teal mb-4">Raisonnements valides</p>
+            <div class="space-y-4 text-[14px] leading-relaxed">
+              <p>S'il pleut, alors la route est mouillée ; or il pleut ; donc la route est mouillée. <span class="text-inksoft/50">(modus ponens)</span></p>
+              <p>S'il neige, alors il fait froid ; or il ne fait pas froid ; donc il ne neige pas. <span class="text-inksoft/50">(modus tollens)</span></p>
+            </div>
+          </div>
+          <div class="p-5 sm:p-6 bg-rustsoft border-t sm:border-t-0 sm:border-l divider-rule">
+            <p class="font-sans font-semibold text-sm text-rust mb-4">Raisonnements non valides</p>
+            <div class="space-y-4 text-[14px] leading-relaxed">
+              <p>Si f est dérivable en un point, alors f est continue en ce point ; or |x| est continue en 0 ; donc |x| est dérivable en 0.</p>
+              <p>Un homme cultivé a lu les aventures de Tintin ; or M. Salah est un homme cultivé ; donc M. Salah a lu les aventures de Tintin.</p>
+            </div>
+          </div>
+        </div>
+        <p class="text-sm text-inksoft/70 mt-4 leading-relaxed">Dans les deux exemples invalides, on part de « Q est vrai » (continuité, lecture de Tintin) pour conclure à « P est vrai » (dérivabilité, culture) — c'est le sophisme de l'<strong>affirmation du conséquent</strong>. Une implication vraie ne se lit que dans un sens.</p>
+      </section>
+
+      <!-- 9. OUTILS -->
+      <section id="sec-9" class="mb-16 scroll-mt-24">
+        <p class="section-num text-sm mb-2">09</p>
+        <h2 class="font-serif text-2xl sm:text-3xl mb-6">Les outils de la logique</h2>
+
+        <p class="mb-4 leading-relaxed">
+          Les <strong>propositions</strong> sont des énoncés qui peuvent être soit vrais, soit faux — jamais les deux à la fois. Des <strong>connecteurs</strong> permettent ensuite de construire des propositions complexes à partir de propositions simples&nbsp;:
+        </p>
+
+        <div class="overflow-x-auto mb-8 -mx-1">
+          <table class="tbl w-full text-sm border-collapse min-w-[560px]">
+            <thead>
+              <tr class="font-sans text-[11px] text-inksoft/60 border-b">
+                <th class="text-left py-2 pr-3 font-normal">Connecteur</th>
+                <th class="text-left py-2 pr-3 font-normal">Symbole</th>
+                <th class="text-left py-2 pr-3 font-normal">Exemple</th>
+                <th class="text-left py-2 font-normal">Lecture</th>
+              </tr>
+            </thead>
+            <tbody class="align-top">
+              <tr class="border-b"><td class="py-2.5 pr-3">Négation</td><td class="py-2.5 pr-3 font-mono">¬</td><td class="py-2.5 pr-3 font-mono">¬(il_pleut)</td><td class="py-2.5 text-inksoft/70">il ne pleut pas</td></tr>
+              <tr class="border-b"><td class="py-2.5 pr-3">Disjonction</td><td class="py-2.5 pr-3 font-mono">∨</td><td class="py-2.5 pr-3 font-mono">(il_pleut) ∨ (route_mouillée)</td><td class="py-2.5 text-inksoft/70">il pleut ou la route est mouillée</td></tr>
+              <tr class="border-b"><td class="py-2.5 pr-3">Conjonction</td><td class="py-2.5 pr-3 font-mono">∧</td><td class="py-2.5 pr-3 font-mono">(il_pleut) ∧ (pas_de_parapluie)</td><td class="py-2.5 text-inksoft/70">il pleut et je n'ai pas de parapluie</td></tr>
+              <tr class="border-b"><td class="py-2.5 pr-3">Implication</td><td class="py-2.5 pr-3 font-mono">⇒</td><td class="py-2.5 pr-3 font-mono">(il_pleut) ⇒ (route_mouillée)</td><td class="py-2.5 text-inksoft/70">s'il pleut alors la route est mouillée</td></tr>
+              <tr class="border-b"><td class="py-2.5 pr-3">Équivalence</td><td class="py-2.5 pr-3 font-mono">⇔</td><td class="py-2.5 pr-3 font-mono">(il_pleut) ⇔ (route_mouillée)</td><td class="py-2.5 text-inksoft/70">il pleut si et seulement si la route est mouillée</td></tr>
+              <tr class="border-b"><td class="py-2.5 pr-3">Quantif. existentielle</td><td class="py-2.5 pr-3 font-mono">∃</td><td class="py-2.5 pr-3 font-mono">∃x (dieu(x))</td><td class="py-2.5 text-inksoft/70">il existe un x tel que x est dieu</td></tr>
+              <tr><td class="py-2.5 pr-3">Quantif. universelle</td><td class="py-2.5 pr-3 font-mono">∀</td><td class="py-2.5 pr-3 font-mono">∀x (homme(x) ⇒ mortel(x))</td><td class="py-2.5 text-inksoft/70">tout homme est mortel</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="leading-relaxed text-inksoft">
+          À cela s'ajoutent des <strong>règles d'inférence</strong>, qui gouvernent le passage des prémisses à la conclusion — par exemple&nbsp;: si (A ⇒ B) et A sont vrais, alors B est vrai.
+        </p>
+      </section>
+
+      <!-- 10. APPLICATIONS -->
+      <section id="sec-10" class="mb-16 scroll-mt-24">
+        <p class="section-num text-sm mb-2">10</p>
+        <h2 class="font-serif text-2xl sm:text-3xl mb-6">Applications de la logique</h2>
+
+        <div class="space-y-6">
+          <div>
+            <p class="font-sans font-semibold text-sm mb-1">Mathématiques</p>
+            <p class="text-inksoft leading-relaxed">Démontrer des théorèmes.</p>
+          </div>
+          <div>
+            <p class="font-sans font-semibold text-sm mb-1">Vie quotidienne</p>
+            <p class="text-inksoft leading-relaxed">Analyser l'argumentation — discours politiques, discours juridiques…</p>
+          </div>
+          <div>
+            <p class="font-sans font-semibold text-sm mb-2">Informatique</p>
+            <ul class="list-disc pl-6 space-y-1.5 marker:text-gold text-inksoft leading-relaxed">
+              <li>Spécification des logiciels, spécification des besoins ;</li>
+              <li>programmation : preuve de correction des programmes, programmation en logique (Prolog), programmation par contraintes ;</li>
+              <li>réseaux : preuve des propriétés d'un réseau (absence de blocage…) ;</li>
+              <li>intelligence artificielle : robotique et génération de plans, diagnostic de pannes, dialogue homme-machine, analyse de documents (résumé automatique…) ;</li>
+              <li>bases de données déductives (généralisation des bases de données relationnelles) ;</li>
+              <li>systèmes experts.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 11. INGREDIENTS -->
+      <section id="sec-11" class="mb-16 scroll-mt-24">
+        <p class="section-num text-sm mb-2">11</p>
+        <h2 class="font-serif text-2xl sm:text-3xl mb-6">Ingrédients d'un système logique</h2>
+
+        <p class="mb-6 leading-relaxed">On décrit généralement une logique par trois éléments&nbsp;:</p>
+
+        <div class="grid sm:grid-cols-3 gap-4 mb-10">
+          <div class="border divider-rule rounded-sm p-5">
+            <p class="font-sans font-semibold text-sm mb-2">Syntaxe</p>
+            <p class="text-sm text-inksoft leading-relaxed">Qu'est-ce qu'une formule&nbsp;? Comment s'écrit-elle&nbsp;?</p>
+          </div>
+          <div class="border divider-rule rounded-sm p-5">
+            <p class="font-sans font-semibold text-sm mb-2">Sémantique</p>
+            <p class="text-sm text-inksoft leading-relaxed">Quel est le sens donné à chaque formule&nbsp;? Comment déterminer sa valeur de vérité&nbsp;?</p>
+          </div>
+          <div class="border divider-rule rounded-sm p-5">
+            <p class="font-sans font-semibold text-sm mb-2">Système de déduction</p>
+            <p class="text-sm text-inksoft leading-relaxed">Comment démontrer automatiquement de nouveaux résultats&nbsp;? — une méthode de preuve pour déterminer si une formule est vraie.</p>
+          </div>
+        </div>
+
+        <p class="mb-6 leading-relaxed">Ces trois éléments correspondent aux trois <strong>niveaux d'analyse</strong> de toute logique&nbsp;:</p>
+        <ul class="list-disc pl-6 space-y-3 mb-10 marker:text-gold">
+          <li class="leading-relaxed"><strong>Langage</strong> : définition des formules bien formées, souvent au moyen de règles de réécriture.</li>
+          <li class="leading-relaxed"><strong>Théorie de la preuve</strong> (axiomatique) : définition des notions de prouvabilité et de déduction — un système de déduction qui, à partir de formules choisies comme prémisses, construit de nouvelles formules réputées déduites de celles-ci.</li>
+          <li class="leading-relaxed"><strong>Théorie des modèles</strong> (sémantique) : définition des notions de validité et de conséquence logique — des règles de valuation qui permettent de calculer une « valeur » pour toute formule du langage.</li>
+        </ul>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div class="border divider-rule rounded-sm p-5 sm:p-6">
+            <p class="font-sans font-semibold text-sm mb-2">L'approche syntaxique</p>
+            <p class="text-sm text-inksoft leading-relaxed mb-4">On s'intéresse à la notion de <strong>preuve formelle</strong>. À partir d'axiomes et d'hypothèses, on déduit de nouveaux faits en appliquant un ensemble de règles d'inférence.</p>
+            <p class="text-[13px] text-inksoft/70 font-sans mb-1">Exemple — le modus ponens permet de déduire, des deux énoncés</p>
+            <p class="text-[13px] italic text-inksoft/80 mb-1">« s'il pleut alors il y a des nuages » et « il pleut »,</p>
+            <p class="text-[13px] text-inksoft/70 font-sans">l'énoncé <span class="italic text-inksoft/80">« il y a des nuages »</span>.</p>
+          </div>
+          <div class="border divider-rule rounded-sm p-5 sm:p-6">
+            <p class="font-sans font-semibold text-sm mb-2">L'approche sémantique</p>
+            <p class="text-sm text-inksoft leading-relaxed mb-4">On s'intéresse à évaluer la vérité ou la fausseté de certains énoncés dans certaines situations, à voir si un énoncé est une conséquence logique d'un autre, et à vérifier la <strong>consistance</strong> d'un ensemble d'énoncés.</p>
+            <p class="text-[13px] text-inksoft/70 font-sans mb-1">Exemple — est-il possible que les deux énoncés</p>
+            <p class="text-[13px] italic text-inksoft/80 mb-1">« Paul ne mange pas de chocolat » et « Paul mange du pain ou du chocolat »</p>
+            <p class="text-[13px] text-inksoft/70 font-sans">soient vrais simultanément&nbsp;?</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 12. LANGAGE NATUREL -->
+      <section id="sec-12" class="mb-16 scroll-mt-24">
+        <p class="section-num text-sm mb-2">12</p>
+        <h2 class="font-serif text-2xl sm:text-3xl mb-6">Ressemblance entre logique et langage naturel</h2>
+
+        <p class="mb-4 leading-relaxed">Lorsqu'on étudie le langage naturel, ce que la logique appelle <strong>langage</strong> correspond au <strong>lexique</strong>, et ce qu'elle appelle <strong>axiomatique</strong> correspond à la <strong>syntaxe</strong>.</p>
+        <p class="mb-8 leading-relaxed text-inksoft">Les niveaux de syntaxe et de sémantique ne peuvent alors être confondus&nbsp;: chaque niveau permet d'éliminer davantage de phrases comme étant incorrectes.</p>
+
+        <div class="border divider-rule rounded-sm p-5 sm:p-6">
+          <p class="font-sans text-[11px] text-inksoft/60 mb-3">Exemple — quatre niveaux d'incorrection</p>
+          <p class="italic text-[15px] mb-5 text-inksoft/80">« Il avait le nez collé à un mur, large et épais… »</p>
+          <ol class="space-y-3 text-[14px]">
+            <li class="flex gap-3"><span class="text-rust font-sans text-[11px] shrink-0 pt-0.5">lexical</span><span>« …il avança à un <strong>cha</strong> » — incorrect : « cha » n'existe pas.</span></li>
+            <li class="flex gap-3"><span class="text-rust font-sans text-[11px] shrink-0 pt-0.5">syntaxique</span><span>« …il avança à un <strong>chat</strong> » — lexicalement correct, mais syntaxiquement incorrect.</span></li>
+            <li class="flex gap-3"><span class="text-rust font-sans text-[11px] shrink-0 pt-0.5">sémantique</span><span>« …il avança d'un <strong>chat</strong> » — syntaxiquement correct, mais sémantiquement incorrect.</span></li>
+            <li class="flex gap-3"><span class="text-rust font-sans text-[11px] shrink-0 pt-0.5">pragmatique</span><span>« …il avança d'un <strong>pas</strong> » — sémantiquement correct, mais pragmatiquement incorrect : la personne est devant un mur.</span></li>
+            <li class="flex gap-3"><span class="text-teal font-sans text-[11px] shrink-0 pt-0.5">correct</span><span>« …il <strong>recula</strong> d'un pas » — pragmatiquement correct.</span></li>
+          </ol>
+          <p class="text-[13px] text-inksoft/70 mt-5 pt-4 border-t divider-rule leading-relaxed">
+            <strong>Remarque</strong> — il existe un niveau au-delà de la sémantique, appelé la <strong>pragmatique</strong>. Il s'agit d'étudier l'utilisation du raisonnement en tenant compte du contexte d'énonciation et des conventions de communication.
+          </p>
+        </div>
+      </section>
+
+      <!-- PLAN DU COURS -->
+      <section id="sec-plan" class="mb-16 scroll-mt-24">
+        <p class="font-sans text-[11px] tracking-wide text-inksoft/50 mb-2">La suite du cours</p>
+        <h2 class="font-serif text-2xl sm:text-3xl mb-6">Plan du cours</h2>
+
+        <div class="space-y-6">
+          <div class="flex items-baseline gap-3">
+            <span class="font-serif italic text-gold">Ch. 1</span>
+            <span class="text-inksoft/60">Introduction à la logique</span>
+            <span class="ml-auto font-sans text-[11px] text-teal border border-teal/30 rounded-full px-2 py-0.5 whitespace-nowrap">vous êtes ici</span>
+          </div>
+
+          <div>
+            <p class="font-sans font-semibold text-sm mb-3">Partie I — la logique de propositions</p>
+            <div class="space-y-2 pl-4 border-l divider-rule">
+              <p class="flex items-baseline gap-3"><span class="font-serif italic text-gold">Ch. 2</span><span>Syntaxe de la logique de propositions</span></p>
+              <p class="flex items-baseline gap-3"><span class="font-serif italic text-gold">Ch. 3</span><span>Sémantique de la logique de propositions</span></p>
+              <p class="flex items-baseline gap-3"><span class="font-serif italic text-gold">Ch. 4</span><span>Systèmes de preuve dans la logique de propositions</span></p>
+            </div>
+          </div>
+
+          <div>
+            <p class="font-sans font-semibold text-sm mb-3">Partie II — la logique de prédicats du premier ordre</p>
+            <div class="space-y-2 pl-4 border-l divider-rule">
+              <p class="flex items-baseline gap-3"><span class="font-serif italic text-gold">Ch. 5</span><span>Syntaxe de la logique de prédicats du premier ordre</span></p>
+              <p class="flex items-baseline gap-3"><span class="font-serif italic text-gold">Ch. 6</span><span>Sémantique de la logique de prédicats du premier ordre</span></p>
+              <p class="flex items-baseline gap-3"><span class="font-serif italic text-gold">Ch. 7</span><span>Systèmes de preuve dans la logique de prédicats du premier ordre</span></p>
+            </div>
+          </div>
+        </div>
+        <p class="text-sm text-inksoft/60 mt-6 font-sans">Les chapitres suivants seront ajoutés à cette page au fil du semestre.</p>
+      </section>
+
+      <!-- REFERENCES -->
+      <section id="sec-refs" class="mb-16 scroll-mt-24">
+        <p class="font-sans text-[11px] tracking-wide text-inksoft/50 mb-2">Pour aller plus loin</p>
+        <h2 class="font-serif text-2xl sm:text-3xl mb-6">Références bibliographiques</h2>
+        <ol class="space-y-3 text-[15px] list-decimal pl-5 marker:text-gold marker:font-sans marker:text-sm">
+          <li>T. Cormen, C. Leiserson, R. Rivest, <em>Introduction à l'algorithmique</em>, Dunod, 1994.</li>
+          <li>J. Velu, <em>Méthodes mathématiques pour l'informatique</em>, Dunod, 1999.</li>
+          <li>A. Arnold, I. Guessarian, <em>Mathématiques pour l'informatique</em>, Masson, 2000.</li>
+          <li>C. Bocage, O. Friedel, G. V. Naquet, <em>L'option informatique en classes prépas — MPSI-MP</em>, Ellipses, 1997.</li>
+          <li>Ali Jaoua, support de cours <em>« Logique symbolique et représentation des connaissances »</em>, École de mathématiques et intelligence artificielle, Nabeul, FST, Université Tunis II, mars 1988.</li>
+          <li>Daniel Kayser, <em>La représentation des connaissances</em>, Hermès, 1997.</li>
+          <li>R. Lassaigne, M. de Rougemont, <em>Logique et fondements de l'informatique — logique du 1<sup>er</sup> ordre, calculabilité et λ-calcul</em>, Hermès, 1993.</li>
+          <li>J. Zahnd, <em>Logique élémentaire, cours de base pour informaticiens</em>, Presses polytechniques et universitaires romandes, 1998.</li>
+        </ol>
+      </section>
+
+      <!-- EXERCICES -->
+      <section id="sec-exercices" class="mb-8 scroll-mt-24">
+        <p class="font-sans text-[11px] tracking-wide text-inksoft/50 mb-2">S'entraîner</p>
+        <h2 class="font-serif text-2xl sm:text-3xl mb-8">Exercices</h2>
+
+        <!-- EXERCICE 1 -->
+        <h3 class="font-sans font-semibold text-base mb-2">Exercice 1</h3>
+        <p class="text-inksoft mb-6">Répondre par vrai ou faux. Touchez un énoncé pour afficher son corrigé.</p>
+
+        <div class="space-y-3 mb-14">
+
+          <details class="border divider-rule rounded-sm group">
+            <summary class="flex items-center justify-between gap-4 p-4 sm:p-5">
+              <span class="text-[15px]">1. Aucun raisonnement valide n'a de conclusion fausse.</span>
+              <span class="chev font-sans text-gold shrink-0">›</span>
+            </summary>
+            <div class="px-4 sm:px-5 pb-5 pt-1 border-t divider-rule">
+              <p class="font-sans text-sm faux font-semibold mb-2">Faux</p>
+              <p class="text-sm text-inksoft leading-relaxed mb-3">Certains raisonnements valides ont une conclusion fausse&nbsp;: s'il existe au moins une prémisse fausse, la conclusion <strong>peut</strong> être fausse.</p>
+              <div class="formula rounded-sm px-4 py-3 text-sm">
+                <table class="w-full text-left">
+                  <tr><td class="pr-4 text-gold">Si (a&lt;b) et (c&lt;d) alors (a+c)&lt;(b+d)</td><td class="text-teal text-right whitespace-nowrap">vrai</td></tr>
+                  <tr><td class="pr-4 text-gold">5 &lt; 3</td><td class="faux text-right">faux</td></tr>
+                  <tr><td class="pr-4 text-gold">1 &lt; 2</td><td class="text-teal text-right">vrai</td></tr>
+                  <tr class="formula-line"><td class="pr-4 text-gold pt-2">6 &lt; 5</td><td class="faux text-right pt-2">faux</td></tr>
+                </table>
+              </div>
+              <p class="text-sm text-inksoft/70 mt-3">Un raisonnement valide, avec une conclusion fausse.</p>
+            </div>
+          </details>
+
+          <details class="border divider-rule rounded-sm group">
+            <summary class="flex items-center justify-between gap-4 p-4 sm:p-5">
+              <span class="text-[15px]">2. Certains raisonnements valides sont tels que toutes les prémisses sont vraies et la conclusion est fausse.</span>
+              <span class="chev font-sans text-gold shrink-0">›</span>
+            </summary>
+            <div class="px-4 sm:px-5 pb-5 pt-1 border-t divider-rule">
+              <p class="font-sans text-sm faux font-semibold mb-2">Faux</p>
+              <p class="text-sm text-inksoft leading-relaxed">Tous les raisonnements valides dont toutes les prémisses sont vraies ont une conclusion vraie — c'est précisément la définition de la validité (voir exercice suivant).</p>
+            </div>
+          </details>
+
+          <details class="border divider-rule rounded-sm group">
+            <summary class="flex items-center justify-between gap-4 p-4 sm:p-5">
+              <span class="text-[15px]">3. Certains raisonnements valides sont tels que certaines des prémisses sont vraies et la conclusion est fausse.</span>
+              <span class="chev font-sans text-gold shrink-0">›</span>
+            </summary>
+            <div class="px-4 sm:px-5 pb-5 pt-1 border-t divider-rule">
+              <p class="font-sans text-sm vrai font-semibold mb-2">Vrai</p>
+              <div class="formula rounded-sm px-4 py-3 text-sm">
+                <table class="w-full text-left">
+                  <tr><td class="pr-4 text-gold">Si (a&lt;b) et (c&lt;d) alors (a+c)&lt;(b+d)</td><td class="text-teal text-right whitespace-nowrap">vrai</td></tr>
+                  <tr><td class="pr-4 text-gold">5 &lt; 3</td><td class="faux text-right">faux</td></tr>
+                  <tr><td class="pr-4 text-gold">1 &lt; 2</td><td class="text-teal text-right">vrai</td></tr>
+                  <tr class="formula-line"><td class="pr-4 text-gold pt-2">6 &lt; 5</td><td class="faux text-right pt-2">faux</td></tr>
+                </table>
+              </div>
+            </div>
+          </details>
+
+          <details class="border divider-rule rounded-sm group">
+            <summary class="flex items-center justify-between gap-4 p-4 sm:p-5">
+              <span class="text-[15px]">4. Certains raisonnements valides sont tels que toutes les prémisses sont fausses et la conclusion est vraie.</span>
+              <span class="chev font-sans text-gold shrink-0">›</span>
+            </summary>
+            <div class="px-4 sm:px-5 pb-5 pt-1 border-t divider-rule">
+              <p class="font-sans text-sm vrai font-semibold mb-2">Vrai</p>
+              <div class="formula rounded-sm px-4 py-3 text-sm">
+                <table class="w-full text-left">
+                  <tr><td class="pr-4 text-gold">Si (a&lt;b) et (c&lt;d) alors (a+c)&gt;(b+d)</td><td class="faux text-right whitespace-nowrap">faux</td></tr>
+                  <tr><td class="pr-4 text-gold">5 &lt; 3</td><td class="faux text-right">faux</td></tr>
+                  <tr><td class="pr-4 text-gold">4 &lt; 2</td><td class="faux text-right">faux</td></tr>
+                  <tr class="formula-line"><td class="pr-4 text-gold pt-2">9 &gt; 5</td><td class="text-teal text-right pt-2">vrai</td></tr>
+                </table>
+              </div>
+            </div>
+          </details>
+
+          <details class="border divider-rule rounded-sm group">
+            <summary class="flex items-center justify-between gap-4 p-4 sm:p-5">
+              <span class="text-[15px]">5. Si un raisonnement a une conclusion fausse, il n'est pas valide.</span>
+              <span class="chev font-sans text-gold shrink-0">›</span>
+            </summary>
+            <div class="px-4 sm:px-5 pb-5 pt-1 border-t divider-rule">
+              <p class="font-sans text-sm faux font-semibold mb-2">Faux</p>
+              <p class="text-sm text-inksoft leading-relaxed">Un raisonnement à conclusion fausse peut être valide (s'il comporte au moins une prémisse fausse), comme il peut ne pas être valide. La validité porte sur la <strong>forme</strong> du passage prémisses → conclusion, pas sur la vérité de la conclusion elle-même.</p>
+            </div>
+          </details>
+        </div>
+
+        <!-- EXERCICE 2 -->
+        <h3 class="font-sans font-semibold text-base mb-2">Exercice 2</h3>
+        <p class="text-inksoft mb-6">Déterminer si les raisonnements suivants sont valides ou invalides. On pose <span class="font-mono text-sm">A</span> : « Ali est en retard », <span class="font-mono text-sm">S</span> : « Salah est en retard », <span class="font-mono text-sm">M</span> : « Mohamed est agacé ». La prémisse commune est <span class="font-mono text-sm">(A ∧ S) ⇒ M</span>.</p>
+
+        <div class="space-y-3">
+          <details class="border divider-rule rounded-sm group">
+            <summary class="flex items-center justify-between gap-4 p-4 sm:p-5">
+              <span class="text-[15px]">1. Si Ali et Salah sont tous deux en retard, alors Mohamed est agacé. Mohamed n'est pas agacé. Donc Ali n'est pas en retard ou Salah n'est pas en retard.</span>
+              <span class="chev font-sans text-gold shrink-0">›</span>
+            </summary>
+            <div class="px-4 sm:px-5 pb-5 pt-1 border-t divider-rule">
+              <p class="font-sans text-sm vrai font-semibold mb-2">Valide</p>
+              <p class="text-sm text-inksoft leading-relaxed">C'est un modus tollens appliqué à (A ∧ S) ⇒ M avec ¬M : on obtient ¬(A ∧ S), qui équivaut par les lois de De Morgan à ¬A ∨ ¬S — exactement la conclusion annoncée.</p>
+            </div>
+          </details>
+
+          <details class="border divider-rule rounded-sm group">
+            <summary class="flex items-center justify-between gap-4 p-4 sm:p-5">
+              <span class="text-[15px]">2. Si Ali et Salah sont tous deux en retard, alors Mohamed est agacé. Mohamed n'est pas agacé. Donc Ali n'est pas en retard.</span>
+              <span class="chev font-sans text-gold shrink-0">›</span>
+            </summary>
+            <div class="px-4 sm:px-5 pb-5 pt-1 border-t divider-rule">
+              <p class="font-sans text-sm faux font-semibold mb-2">Invalide</p>
+              <p class="text-sm text-inksoft leading-relaxed">Le modus tollens ne donne que ¬A ∨ ¬S. Rien n'empêche que ce soit Salah — et non Ali — qui ne soit pas en retard, avec Ali toujours en retard : la conclusion « Ali n'est pas en retard » n'est pas garantie.</p>
+            </div>
+          </details>
+
+          <details class="border divider-rule rounded-sm group">
+            <summary class="flex items-center justify-between gap-4 p-4 sm:p-5">
+              <span class="text-[15px]">3. Si Ali et Salah sont tous deux en retard, alors Mohamed est agacé. Ali est en retard. Salah n'est pas en retard. Donc Mohamed n'est pas agacé.</span>
+              <span class="chev font-sans text-gold shrink-0">›</span>
+            </summary>
+            <div class="px-4 sm:px-5 pb-5 pt-1 border-t divider-rule">
+              <p class="font-sans text-sm faux font-semibold mb-2">Invalide</p>
+              <p class="text-sm text-inksoft leading-relaxed">Puisque Salah n'est pas en retard, l'antécédent (A ∧ S) est déjà faux, et l'implication (A ∧ S) ⇒ M ne dit alors <em>rien</em> sur M — que Mohamed soit agacé ou non pour une tout autre raison est parfaitement compatible avec les prémisses. Conclure ¬M revient à « nier un conjoint », un schéma non valide.</p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <div class="flex items-center justify-between gap-4 mt-16 pt-8 border-t divider-rule font-sans text-sm">
+        <button type="button" data-page-prev class="flex-1 text-left border divider-rule rounded-sm px-4 py-3 hover:border-ink transition-colors disabled:cursor-default">
+          <span class="block text-inksoft/50 text-[11px] mb-0.5">← Précédent</span>
+          <span data-page-nav-label class="block text-ink"></span>
+        </button>
+        <button type="button" data-page-next class="flex-1 text-right border divider-rule rounded-sm px-4 py-3 hover:border-ink transition-colors disabled:cursor-default">
+          <span class="block text-inksoft/50 text-[11px] mb-0.5">Suivant →</span>
+          <span data-page-nav-label class="block text-ink"></span>
+        </button>
+      </div>
+
+    </article>
+
+    <!-- FOOTER -->
+    <footer id="page-footer" class="border-t divider-rule px-6 sm:px-10 lg:px-16 py-12 font-sans text-sm">
+      <div class="max-w-3xl grid sm:grid-cols-3 gap-8 mb-10">
+        <div>
+          <p class="text-inksoft/50 text-[11px] mb-2">Cours</p>
+          <p class="mb-1">Logiques formelles</p>
+          <p class="text-inksoft/70">FSM de Monastir</p>
+          <p class="text-inksoft/70">Licence 1 — Sciences de l'informatique</p>
+          <p class="text-inksoft/70">Année universitaire 2026–2027</p>
+        </div>
+        <div>
+          <p class="text-inksoft/50 text-[11px] mb-2">Enseignante</p>
+          <p class="mb-1">Mme Hager Elkamel</p>
+          <a href="mailto:Jamoussi.hager@gmail.com" class="inline-link underline text-inksoft/70 break-all">Jamoussi.hager@gmail.com</a>
+          <p class="text-inksoft/70 mt-2">Code Google Classroom&nbsp;: <span class="font-mono">fch2jeuf</span></p>
+        </div>
+        <div>
+          <p class="text-inksoft/50 text-[11px] mb-2">Mise en page</p>
+          <p class="mb-1">Nour Yahyaoui</p>
+          <a href="https://github.com/nour-yahyaoui" class="inline-link underline text-inksoft/70 block">github.com/nour-yahyaoui</a>
+          <a href="https://nour-yahyaoui.github.io" class="inline-link underline text-inksoft/70 block">nour-yahyaoui.vercel.app</a>
+        </div>
+      </div>
+      <p class="text-inksoft/40 text-xs border-t divider-rule pt-6 max-w-3xl">Notes de cours à usage pédagogique, établies à partir du support « Logiques formelles » de Mme Hager Elkamel — FSM de Monastir.</p>
+    </footer>
+
+  </div>
+</div>
+
+<script>
+  // Mobile nav toggle
+  const sidebar = document.getElementById('sidebar');
+  const scrim = document.getElementById('scrim');
+  const openBtn = document.getElementById('navToggle');
+  const closeBtn = document.getElementById('navClose');
+
+  function openNav() { sidebar.classList.add('open'); scrim.classList.add('open'); }
+  function closeNav() { sidebar.classList.remove('open'); scrim.classList.remove('open'); }
+
+  openBtn && openBtn.addEventListener('click', openNav);
+  closeBtn && closeBtn.addEventListener('click', closeNav);
+  scrim && scrim.addEventListener('click', closeNav);
+  sidebar.querySelectorAll('a').forEach(a => a.addEventListener('click', closeNav));
+</script>
+
+<script src="../assets/app.js"></script>
+<script>
+  const CH_SECTIONS = [
+    'sec-1','sec-2','sec-3','sec-4','sec-5','sec-6','sec-modelisation',
+    'sec-7','sec-8','sec-exemples','sec-9','sec-10','sec-11','sec-12',
+    'sec-plan','sec-refs','sec-exercices'
+  ];
+  Courhub.initReader('logique-formelle-ch1', CH_SECTIONS);
+  Courhub.initPaginator('logique-formelle-ch1', ['accueil', ...CH_SECTIONS], {
+    articleId: 'reader-article',
+    footerId: 'page-footer',
+  });
+</script>
+
+</body>
+</html>
