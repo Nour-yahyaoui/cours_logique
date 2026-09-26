@@ -1,0 +1,78 @@
+/* ============ CourHub — thème clair/sombre + suivi de progression ============ */
+
+:root { --ch-transition: .2s ease; }
+
+html[data-theme="dark"] body { background: #10141C; }
+html[data-theme="dark"] .bg-paper        { background: #10141C !important; }
+html[data-theme="dark"] .bg-paper\/95    { background: rgba(16,20,28,.95) !important; }
+html[data-theme="dark"] .text-ink        { color: #ECE9DE !important; }
+html[data-theme="dark"] .text-inksoft    { color: #9DA6BC !important; }
+html[data-theme="dark"] .bg-panel        { background: #1A202C !important; }
+html[data-theme="dark"] .bg-ink          { background: #0B0E14 !important; }
+html[data-theme="dark"] .border-rule,
+html[data-theme="dark"] .divider-rule    { border-color: #2A3242 !important; }
+html[data-theme="dark"] .bg-goldsoft     { background: #2C2513 !important; }
+html[data-theme="dark"] .bg-tealsoft     { background: #16241F !important; }
+html[data-theme="dark"] .bg-rustsoft     { background: #271713 !important; }
+html[data-theme="dark"] .formula         { background: #1A202C !important; }
+html[data-theme="dark"] a.inline-link    { color: #CDBE8E; }
+html[data-theme="dark"] ::selection      { background: #3A3116; color: #ECE9DE; }
+html[data-theme="dark"] #scrim           { background: rgba(0,0,0,.6); }
+
+/* theme toggle switch */
+.theme-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: Inter, sans-serif; font-size: 12px;
+  border: 1px solid #DAD2BE; border-radius: 999px;
+  padding: 5px 10px; cursor: pointer; background: transparent; color: inherit;
+  transition: border-color var(--ch-transition);
+}
+html[data-theme="dark"] .theme-toggle { border-color: #2A3242; }
+.theme-toggle:hover { border-color: #A9822B; }
+.theme-toggle .sun { display: none; }
+html[data-theme="dark"] .theme-toggle .moon { display: none; }
+html[data-theme="dark"] .theme-toggle .sun  { display: inline; }
+
+/* ============ progress / tracking ============ */
+.ch-progress-track {
+  width: 100%; height: 6px; border-radius: 999px;
+  background: #DAD2BE; overflow: hidden;
+}
+html[data-theme="dark"] .ch-progress-track { background: #2A3242; }
+.ch-progress-fill {
+  height: 100%; background: #2C5A57; border-radius: 999px;
+  width: 0%; transition: width .35s ease;
+}
+.ch-tracking-box {
+  font-family: Inter, sans-serif; font-size: 12px;
+}
+.ch-tracking-box .stat-num { font-family: 'Source Serif 4', serif; font-size: 20px; }
+
+/* ============ per-section completion controls ============ */
+.course-section { position: relative; transition: opacity var(--ch-transition); }
+.section-check {
+  position: absolute; top: 0; right: 0;
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: Inter, sans-serif; font-size: 11px;
+  padding: 5px 10px; border: 1px solid #DAD2BE; border-radius: 999px;
+  background: #FBFAF6; color: #3E4C6B; cursor: pointer;
+  transition: all var(--ch-transition); white-space: nowrap; z-index: 5;
+}
+html[data-theme="dark"] .section-check { background: #10141C; border-color: #2A3242; color: #9DA6BC; }
+.section-check .check-icon { display: none; }
+.section-check.is-done { background: #E3EEEC; border-color: #2C5A57; color: #2C5A57; }
+.section-check.is-done .check-icon { display: inline; }
+html[data-theme="dark"] .section-check.is-done { background: #16241F; border-color: #3F7A72; color: #7FCABE; }
+
+.course-section.is-done > *:not(.section-check) { opacity: .4; }
+.course-section.is-done:hover > *:not(.section-check) { opacity: .7; }
+
+@media (max-width: 640px) {
+  .section-check { position: static; display: inline-flex; margin-bottom: 10px; }
+}
+
+/* AI question widget */
+.ai-question { border: 1px dashed #A9822B; border-radius: 4px; background: #F0E6C8; }
+html[data-theme="dark"] .ai-question { background: #2C2513; border-color: #7A6323; }
+.ai-question summary { list-style: none; cursor: pointer; }
+.ai-question summary::-webkit-details-marker { display: none; }
