@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Technologies Multimédias — Chapitre 1 : Théorie et traitement des signaux</title>
+<meta name="description" content="Notes de cours — Technologies Multimédias, Chapitre 1 : Théorie et traitement des signaux. FSM de Monastir, LSI1.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.85em%22 font-size=%2280%22>~</text></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          serif: ['"Source Serif 4"', 'Georgia', 'serif'],
+          sans:  ['Inter', 'system-ui', 'sans-serif'],
+          mono:  ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+        }
+      }
+    }
+  }
+</script>
+
+<script>
+  (function () {
+    var stored = localStorage.getItem('courhub:theme');
+    var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+  })();
+</script>
+
+<style>
+  :root {
+    --bg: #FFFFFF;
+    --bg-panel: #F6F5F1;
+    --border: #E4E2D9;
+    --text: #1A1F2C;
+    --text-soft: #5B6478;
+    --text-faint: #8B93A5;
+    --gold: #92721F;
+    --gold-soft: #F4ECD3;
+    --teal: #1F6459;
+    --teal-soft: #E4F1EE;
+    --rust: #A3402C;
+    --rust-soft: #FAEAE4;
+    --sidebar-bg: #FDFCFA;
+    --hero-bg: #12241E;
+    --hero-text: #F6F5F1;
+    --hero-border: rgba(246,245,241,0.14);
+    --on-gold: #171B26;
+    --scrim: rgba(15, 19, 28, .5);
+    --chart-line: #92721F;
+    --chart-line2: #1F6459;
+    --chart-axis: #8B93A5;
+    --chart-fill: rgba(146,114,31,0.12);
+  }
+  [data-theme="dark"] {
+    --bg: #0E121B;
+    --bg-panel: #171C27;
+    --border: #2B3241;
+    --text: #E7E8ED;
+    --text-soft: #A2AABD;
+    --text-faint: #6C7488;
+    --gold: #DCB863;
+    --gold-soft: #2A2411;
+    --teal: #63C2AE;
+    --teal-soft: #10241F;
+    --rust: #E08D74;
+    --rust-soft: #2A1712;
+    --sidebar-bg: #10141E;
+    --hero-bg: #16241D;
+    --hero-text: #F6F5F1;
+    --hero-border: rgba(246,245,241,0.12);
+    --on-gold: #171226;
+    --scrim: rgba(0, 0, 0, .6);
+    --chart-line: #DCB863;
+    --chart-line2: #63C2AE;
+    --chart-axis: #6C7488;
+    --chart-fill: rgba(220,184,99,0.14);
+  }
+
+  html { scroll-behavior: smooth; scroll-padding-top: 5.5rem; }
+  body { background: var(--bg); color: var(--text); }
+  * { border-color: var(--border); }
+  ::selection { background: var(--gold-soft); color: var(--text); }
+
+  #sidebar::-webkit-scrollbar { width: 6px; }
+  #sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  .navlink { position: relative; color: var(--text-soft); }
+  .navlink:hover { color: var(--text); }
+  .navlink[data-active="true"] { color: var(--text); }
+  .navlink[data-active="true"]::before {
+    content: ""; position: absolute; left: -14px; top: 0.35em; width: 6px; height: 6px;
+    border-radius: 999px; background: var(--gold);
+  }
+
+  .formula { font-family: 'JetBrains Mono', ui-monospace, monospace; background: var(--bg-panel); border-left: 3px solid var(--gold); }
+
+  details > summary { list-style: none; cursor: pointer; }
+  details > summary::-webkit-details-marker { display: none; }
+  details[open] summary .chev { transform: rotate(90deg); }
+  .chev { transition: transform .18s ease; color: var(--gold); }
+
+  .section-num { font-family: 'Source Serif 4', serif; font-style: italic; color: var(--gold); }
+
+  #sidebar { transition: transform .25s ease; background: var(--sidebar-bg); }
+  @media (max-width: 1023px) {
+    #sidebar { position: fixed; inset: 0 20% 0 0; transform: translateX(-100%); z-index: 50; }
+    #sidebar.open { transform: translateX(0); }
+    #scrim { position: fixed; inset: 0; background: var(--scrim); opacity: 0; pointer-events: none; transition: opacity .25s ease; z-index: 40; }
+    #scrim.open { opacity: 1; pointer-events: auto; }
+  }
+
+  table.tbl th, table.tbl td { border-color: var(--border); }
+  a.inline-link { text-underline-offset: 3px; text-decoration-color: var(--border); }
+  a.inline-link:hover { text-decoration-color: var(--gold); }
+
+  .theme-toggle { position: relative; width: 44px; height: 26px; border-radius: 999px; background: var(--bg-panel); border: 1px solid var(--border); display: inline-flex; align-items: center; padding: 2px; cursor: pointer; flex-shrink: 0; }
+  .theme-toggle .knob { width: 20px; height: 20px; border-radius: 999px; background: var(--gold); display: flex; align-items: center; justify-content: center; color: var(--on-gold); transition: transform .2s ease; transform: translateX(0); }
+  [data-theme="dark"] .theme-toggle .knob { transform: translateX(18px); }
+  .theme-toggle svg { width: 12px; height: 12px; }
+  .icon-sun { display: inline; } .icon-moon { display: none; }
+  [data-theme="dark"] .icon-sun { display: none; } [data-theme="dark"] .icon-moon { display: inline; }
+
+  /* ---- Charts ---- */
+  .chart-card { border: 1px solid var(--border); border-radius: 2px; padding: 14px 14px 10px; background: var(--bg); opacity: 0; transform: translateY(10px); transition: opacity .5s ease, transform .5s ease; }
+  .chart-card.in-view { opacity: 1; transform: translateY(0); }
+  .chart-caption { font-family: Inter, sans-serif; font-size: 12px; color: var(--text-faint); text-align: center; margin-top: 6px; }
+  .chart-svg { width: 100%; height: auto; display: block; }
+  .chart-path { stroke: var(--chart-line); stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .chart-path-alt { stroke: var(--chart-line2); }
+  .chart-axis { stroke: var(--chart-axis); stroke-width: 1.2; }
+  .chart-guide { stroke: var(--chart-axis); stroke-width: 1; stroke-dasharray: 3 3; opacity: .6; }
+  .chart-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; fill: var(--text-faint); }
+  .chart-mark-open { fill: var(--bg); stroke: var(--chart-line); stroke-width: 1.6; }
+  .chart-mark-filled { fill: var(--chart-line); }
+  .chart-fillarea { fill: var(--chart-fill); }
+
+  .badge { display:inline-flex; align-items:center; font-family: Inter, sans-serif; font-size: 11px; padding: 2px 8px; border-radius: 999px; border: 1px solid; }
+  .badge-paire { color: var(--teal); border-color: var(--teal); background: var(--teal-soft); }
+  .badge-impaire { color: var(--rust); border-color: var(--rust); background: var(--rust-soft); }
+  .badge-ni { color: var(--text-soft); border-color: var(--border); background: var(--bg-panel); }
+</style>
+</head>
+
+<body class="font-serif antialiased" style="background:var(--bg); color:var(--text);">
+
+<div class="lg:hidden sticky top-0 z-30 backdrop-blur border-b" style="background:color-mix(in srgb, var(--bg) 92%, transparent); border-color:var(--border);">
+  <div class="flex items-center justify-between px-4 py-3">
+    <a href="#accueil" class="flex items-center gap-2">
+      <span class="font-mono text-lg" style="color:var(--gold);">~</span>
+      <span class="font-sans font-semibold text-sm tracking-tight">Technologies Multimédias</span>
+    </a>
+    <div class="flex items-center gap-3">
+      <button class="theme-toggle" id="themeToggleMobile" data-theme-toggle aria-label="Changer de thème">
+        <span class="knob">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg>
+        </span>
+      </button>
+      <button id="navToggle" aria-label="Ouvrir le plan du chapitre" class="font-sans text-xs px-3 py-1.5 border rounded-sm" style="border-color:var(--border);">Plan</button>
+    </div>
+  </div>
+</div>
+
+<div id="scrim"></div>
+
+<div class="lg:grid lg:grid-cols-[272px_1fr] lg:max-w-[1400px] lg:mx-auto">
+
+  <aside id="sidebar" class="border-r lg:sticky lg:top-0 lg:h-screen overflow-y-auto" style="border-color:var(--border);">
+    <div class="flex items-center justify-between px-6 pt-6 lg:pt-10 pb-4">
+      <a href="#accueil" class="hidden lg:flex items-center gap-2">
+        <span class="font-mono text-xl" style="color:var(--gold);">~</span>
+        <span class="font-sans font-semibold text-sm">Technologies Multimédias</span>
+      </a>
+      <button id="navClose" aria-label="Fermer" class="lg:hidden font-sans text-xl leading-none px-2" style="color:var(--text-soft);">×</button>
+    </div>
+
+    <div class="hidden lg:flex items-center justify-between px-6 pb-6">
+      <span class="font-sans text-[12px]" style="color:var(--text-soft);">Thème</span>
+      <button class="theme-toggle" id="themeToggleDesktop" data-theme-toggle aria-label="Changer de thème">
+        <span class="knob">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg>
+        </span>
+      </button>
+    </div>
+
+    <nav class="px-6 pb-16 font-sans text-[13px] leading-relaxed">
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-2">
+          <span class="progress-count text-[12px]" style="color:var(--text-soft);">0 / 0 sections lues</span>
+          <button class="progress-reset text-[11px] underline" style="color:var(--text-faint);">Réinitialiser</button>
+        </div>
+        <div class="h-1 rounded-full overflow-hidden" style="background:var(--border);">
+          <div class="progress-bar-fill h-full rounded-full" style="background:var(--gold); width:0%; transition:width .2s ease;"></div>
+        </div>
+        <div class="flex justify-between mt-2 pt-2 border-t text-[11px]" style="border-color:var(--border); color:var(--text-faint);">
+          <span>Aujourd'hui&nbsp;: <span data-progress-today style="color:var(--text);">0</span></span>
+          <span>Avant&nbsp;: <span data-progress-before style="color:var(--text);">0</span></span>
+        </div>
+      </div>
+      <p style="color:var(--text-faint);" class="mb-2 mt-2">Chapitre 1</p>
+      <ol id="navList" class="space-y-2 pl-4 border-l" style="border-color:var(--border);"></ol>
+
+      <div class="mt-10 pt-6 border-t space-y-1" style="border-color:var(--border); color:var(--text-soft);">
+        <p class="text-[11px]" style="color:var(--text-faint);">Responsable du cours</p>
+        <p>Dr. Faîçal Baklouti</p>
+        <p class="text-[11px] mt-3" style="color:var(--text-faint);">Code classroom</p>
+        <p class="font-mono">bcs2qvks</p>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="min-w-0">
+
+    <header id="accueil" class="relative" style="background:var(--hero-bg); color:var(--hero-text);">
+      <div class="px-6 sm:px-10 lg:px-16 pt-14 pb-16 sm:pt-20 sm:pb-24 max-w-3xl">
+        <p class="font-sans text-[13px] tracking-wide mb-5" style="color:var(--gold);">FSM de Monastir · 1ère Année Licence Science de l'Informatique (LSI1) · 2026/2027</p>
+        <h1 class="font-serif text-4xl sm:text-5xl leading-[1.1] font-normal mb-3">Technologies Multimédias</h1>
+        <p class="font-serif italic text-xl sm:text-2xl mb-8" style="opacity:.8;">Chapitre 1 — Théorie et traitement des signaux</p>
+        <p class="font-sans text-[15px] leading-relaxed max-w-lg mb-10" style="opacity:.7;">
+          Support de cours réécrit à partir des diapositives du chapitre 1, avec des schémas de signaux interactifs et animés pour visualiser chaque notion.
+        </p>
+
+        <dl class="font-sans text-sm grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-4 border-t pt-6 max-w-2xl" style="border-color:var(--hero-border);">
+          <div><dt class="text-[11px] mb-1" style="opacity:.45;">Responsable</dt><dd>Dr. Faîçal Baklouti</dd></div>
+          <div><dt class="text-[11px] mb-1" style="opacity:.45;">Classe</dt><dd>LSI1</dd></div>
+          <div><dt class="text-[11px] mb-1" style="opacity:.45;">Classroom</dt><dd class="font-mono">bcs2qvks</dd></div>
+          <div><dt class="text-[11px] mb-1" style="opacity:.45;">Année</dt><dd>2026/2027</dd></div>
+        </dl>
+
+        <div class="flex flex-wrap gap-4 mt-10">
+          <a href="#sec-1" class="font-sans text-sm px-5 py-2.5 rounded-sm" style="background:var(--gold); color:var(--on-gold);">Commencer la lecture</a>
+        </div>
+      </div>
+    </header>
+
+    <article id="content" class="px-6 sm:px-10 lg:px-16 py-14 sm:py-16 max-w-3xl"></article>
+
+    <footer id="page-footer" class="border-t px-6 sm:px-10 lg:px-16 py-12 font-sans text-sm" style="border-color:var(--border);">
+      <div class="max-w-3xl grid sm:grid-cols-3 gap-8 mb-10">
+        <div>
+          <p class="text-[11px] mb-2" style="color:var(--text-faint);">Cours</p>
+          <p class="mb-1">Technologies Multimédias</p>
+          <p style="color:var(--text-soft);">FSM de Monastir</p>
+          <p style="color:var(--text-soft);">Licence 1 — LSI1</p>
+          <p style="color:var(--text-soft);">Année universitaire 2026/2027</p>
+        </div>
+        <div>
+          <p class="text-[11px] mb-2" style="color:var(--text-faint);">Responsable</p>
+          <p class="mb-1">Dr. Faîçal Baklouti</p>
+          <p class="mt-2" style="color:var(--text-soft);">Code Google Classroom&nbsp;: <span class="font-mono">bcs2qvks</span></p>
+        </div>
+        <div>
+          <p class="text-[11px] mb-2" style="color:var(--text-faint);">Mise en page</p>
+          <p class="mb-1">Nour Yahyaoui</p>
+          <a href="https://github.com/nour-yahyaoui" class="inline-link underline block" style="color:var(--text-soft);">github.com/nour-yahyaoui</a>
+          <a href="https://nour-yahyaoui.github.io" class="inline-link underline block" style="color:var(--text-soft);">nour-yahyaoui.github.io</a>
+        </div>
+      </div>
+      <p class="text-xs border-t pt-6 max-w-3xl" style="color:var(--text-faint); border-color:var(--border);">Notes de cours à usage pédagogique, établies à partir du support « Technologies Multimédias » de Dr. Faîçal Baklouti — FSM de Monastir.</p>
+    </footer>
+
+  </div>
+</div>
+
+<script src="../assets/app.js"></script>
+<script>
+/* =========================================================================
+   COURSE DATASET — content is data, the engine below only renders it.
+   ========================================================================= */
+var COURSE = {
+  sections: [
+    { id:"sec-1", num:"01", title:"Introduction", blocks:[
+      {type:"subheading", text:"1.1 Qu'est-ce qu'un signal ?"},
+      {type:"p", html:"Un signal est une représentation physique d'une information que l'on souhaite <strong>transmettre</strong>, <strong>traiter</strong> ou <strong>analyser</strong>. Un signal peut être défini comme :"},
+      {type:"list", items:[
+        "Une <strong>représentation physique</strong> d'une information à transmettre.",
+        "Une <strong>entité</strong> qui sert à véhiculer une information.",
+        "Un phénomène qui peut être <strong>mesurable</strong> par un appareil de mesure."
+      ]},
+      {type:"examples", label:"Exemples", items:[
+        {title:"Microphone", physique:"pression acoustique", representation:"signal électrique proportionnel"},
+        {title:"Souris d'ordinateur", physique:"déplacement, clic, molette", representation:"signal électrique impulsionnel"}
+      ]},
+      {type:"subheading", text:"1.2 Théorie du signal"},
+      {type:"p", html:"L'objectif fondamental de la théorie du signal est de fournir une <strong>description mathématique</strong> des signaux. Elle nous permet de&nbsp;:"},
+      {type:"list", items:[
+        "Représenter mathématiquement les principales caractéristiques d'un signal.",
+        "Analyser l'évolution d'un signal au cours du temps.",
+        "Étudier les modifications subies par un signal lors de sa transmission ou de son traitement."
+      ]},
+      {type:"subheading", text:"1.3 Traitement du signal"},
+      {type:"p", html:"Le traitement du signal vise à extraire des informations utiles d'un signal et à analyser ou modifier ce signal en fonction de l'application. L'un des objectifs importants est d'extraire le maximum d'informations utiles d'un signal affecté par du bruit."},
+      {type:"callout", title:"Le traitement du signal peut être utilisé pour :", items:[
+        "Analyser des signaux","Éliminer des composantes indésirables","Améliorer la qualité du signal","Extraire des informations utiles","Transformer des signaux."
+      ]},
+      {type:"subheading", text:"1.4 Qu'est-ce qu'un bruit ?"},
+      {type:"p", html:"Un bruit correspond à tout <strong>phénomène perturbateur</strong> gênant la transmission ou l'interprétation d'un signal. La différence entre un signal et le bruit dépend de l'information qui nous intéresse :"},
+      {type:"list", items:[
+        "Le <strong>signal</strong> transporte une information utile.",
+        "Le <strong>bruit</strong> représente une information indésirable ou une perturbation."
+      ]},
+      {type:"subheading", text:"1.5 Rapport signal sur bruit (RSB ou SNR)"},
+      {type:"p", html:"Le rapport signal sur bruit (SNR) mesure la proportion relative du signal par rapport au bruit. Il est défini comme suit :"},
+      {type:"formula", lines:["SNR = P<sub>s</sub> / P<sub>n</sub>"], note:"où P<sub>s</sub> = puissance du signal, P<sub>n</sub> = puissance du bruit."},
+      {type:"p", html:"Le SNR est souvent exprimé en décibels (dB). Il se calcule ainsi :"},
+      {type:"formula", lines:["(S / N)<sub>dB</sub> = 10 · log( P<sub>s</sub> / P<sub>N</sub> )"], note:"Un SNR plus élevé indique généralement un signal plus propre."}
+    ]},
+
+    { id:"sec-2", num:"02", title:"Classification des signaux", blocks:[
+      {type:"p", html:"Il existe plusieurs façons de classer les signaux. Dans ce chapitre, nous abordons la classification <strong>phénoménologique</strong>, <strong>morphologique</strong> et <strong>spectrale</strong>."},
+      {type:"subheading", text:"2.1 Classification phénoménologique"},
+      {type:"p", html:"On considère la nature de l'évolution du signal en fonction du temps. Elle peut être à caractère prédéterminé, ou avoir un comportement non prévisible. Il apparaît deux types de signaux :"},
+      {type:"definition", term:"Signaux déterministes", def:"leur évolution en fonction du temps peut être parfaitement modélisée par une fonction mathématique. On y trouve les signaux périodiques, apériodiques, transitoires, etc."},
+      {type:"chart-row", charts:[
+        {chart:"periodic", caption:"Périodique"},
+        {chart:"aperiodic", caption:"Apériodique"},
+        {chart:"transitoire", caption:"Transitoire"}
+      ]},
+      {type:"definition", term:"Signaux aléatoires", def:"leur comportement temporel est imprévisible ; il faut faire appel à leurs propriétés statistiques pour les décrire. Si ces propriétés sont invariantes dans le temps, on dit qu'ils sont stationnaires."},
+      {type:"chart-row", charts:[
+        {chart:"stationary", caption:"Stationnaire"},
+        {chart:"nonstationary", caption:"Non-stationnaire"}
+      ]},
+      {type:"subheading", text:"2.2 Classification morphologique"},
+      {type:"p", html:"Un signal peut être classé selon que le temps et l'amplitude sont continus ou discrets. On distingue quatre types :"},
+      {type:"table", headers:["Temps","Amplitude","Type"], rows:[
+        ["continus","continus","signal analogique"],
+        ["continus","discrets","signal quantifié"],
+        ["discrets","continus","signal échantillonné"],
+        ["discrets","discrets","signal numérique"]
+      ]},
+      {type:"signal-grid"},
+      {type:"subheading", text:"2.3 Classification spectrale"},
+      {type:"p", html:"Un signal peut être classé suivant la distribution de son amplitude, sa puissance ou son énergie en fonction de la fréquence (spectre du signal). Le domaine des fréquences occupé par son spectre est la <strong>largeur de bande spectrale</strong> du signal, notée Δf, exprimée en hertz :"},
+      {type:"formula", lines:["Δf = F<sub>max</sub> − F<sub>min</sub>"]},
+      {type:"chart", chart:"bandwidth", caption:"Largeur de bande spectrale Δf"},
+      {type:"p", html:"En considérant la fréquence moyenne F<sub>moy</sub> = (F<sub>max</sub> + F<sub>min</sub>) / 2, on distingue deux types de signaux :"},
+      {type:"list", items:[
+        "les signaux à <strong>bande étroite</strong>, avec Δf / F<sub>moy</sub> petit (F<sub>max</sub> ≈ F<sub>min</sub>) ;",
+        "les signaux à <strong>large bande</strong>, avec Δf / F<sub>moy</sub> grand (F<sub>max</sub> ≫ F<sub>min</sub>)."
+      ]},
+      {type:"p", html:"On peut aussi les classer par le domaine de variation de la fréquence moyenne F<sub>moy</sub> :"},
+      {type:"table", headers:["Domaine de fréquence","Appellation","Sigle"], rows:[
+        ["F<sub>moy</sub> &lt; 250 KHz","Basses fréquences","BF"],
+        ["250 KHz &lt; F<sub>moy</sub> &lt; 30 MHz","Hautes fréquences","HF"],
+        ["30 MHz &lt; F<sub>moy</sub> &lt; 300 MHz","Très hautes fréquences","VHF"],
+        ["300 MHz &lt; F<sub>moy</sub> &lt; 3 GHz","Ultra hautes fréquences","UHF"],
+        ["F<sub>moy</sub> &gt; 3 GHz","Super hautes fréquences","SHF"]
+      ]}
+    ]},
+
+    { id:"sec-3", num:"03", title:"Signaux particuliers", blocks:[
+      {type:"p", html:"Nous présentons maintenant plusieurs signaux mathématiques importants, qui servent de briques de base pour construire ou décrire des signaux plus complexes."},
+      {type:"subheading", text:"3.1 Fonction signe"},
+      {type:"formula", lines:["sgn(t) = −1 &nbsp; pour t &lt; 0","sgn(t) = +1 &nbsp; pour t &gt; 0"], note:"Par convention, on admet sgn(0) = 0."},
+      {type:"chart", chart:"sgn", caption:"Fonction signe sgn(t)"},
+      {type:"subheading", text:"3.2 Fonction échelon"},
+      {type:"p", html:"La fonction échelon unité est définie comme suit :"},
+      {type:"formula", lines:["u(t) = 0 &nbsp; pour t &lt; 0","u(t) = 1 &nbsp; pour t &gt; 0"], note:"Par convention, u(0) = 1/2 ; dans certains cas, on préfère lui donner la valeur 1."},
+      {type:"chart", chart:"step", caption:"Fonction échelon u(t)"},
+      {type:"subheading", text:"3.3 Fonction rampe"},
+      {type:"p", html:"La fonction rampe croît linéairement avec le temps. Une rampe élémentaire peut s'écrire :"},
+      {type:"formula", lines:["r(t) = t · u(t) &nbsp;=&nbsp; ∫<sub>−∞</sub><sup>t</sup> u(τ) dτ"]},
+      {type:"chart", chart:"ramp", caption:"Fonction rampe r(t)"},
+      {type:"subheading", text:"3.4 Fonction rectangulaire"},
+      {type:"p", html:"La fonction rectangulaire, également appelée <strong>fonction porte</strong>, représente un signal actif durant un intervalle de temps limité :"},
+      {type:"formula", lines:["rect(t/T) = 1 &nbsp; pour |t/T| &lt; 1/2","rect(t/T) = 0 &nbsp; pour |t/T| &gt; 1/2"]},
+      {type:"chart", chart:"rect", caption:"Fonction rectangulaire rect(t/T)"},
+      {type:"subheading", text:"3.5 Impulsion de Dirac"},
+      {type:"p", html:"L'impulsion de Dirac peut être considérée comme le cas limite d'une impulsion rectangulaire dont la largeur tend vers zéro tandis que son aire reste égale à un. Elle est représentée mathématiquement par :"},
+      {type:"formula", lines:["δ(t) = ∞ &nbsp; pour t = 0","δ(t) = 0 &nbsp; pour t ≠ 0"]},
+      {type:"chart", chart:"dirac", caption:"Impulsion de Dirac δ(t)"},
+      {type:"p", html:"δ(t) ne peut pas être représentée graphiquement à proprement parler&nbsp;; on la schématise par une flèche verticale. <strong>Attention</strong> : le 1 marqué sur la flèche représente l'<strong>aire</strong> de l'impulsion, et non sa hauteur."}
+    ]},
+
+    { id:"sec-4", num:"04", title:"Propriétés des signaux", blocks:[
+      {type:"subheading", text:"4.1 Périodique"},
+      {type:"p", html:"Une fonction est périodique si s(t) = s(t+T), où T est la période. La plus petite valeur positive de T est appelée la <strong>période fondamentale</strong>. La fréquence correspondante est f = 1/T."},
+      {type:"chart", chart:"periodic-small", caption:"Signal périodique"},
+      {type:"subheading", text:"4.2 Pair / impair"},
+      {type:"p", html:"Un signal est <strong>pair</strong> si x(t) = x(−t) — il est symétrique par rapport à l'axe des ordonnées. Un signal est <strong>impair</strong> si x(t) = −x(−t) — il est symétrique par rapport à l'origine."},
+      {type:"exercise-parity"},
+      {type:"subheading", text:"4.3 Causal"},
+      {type:"p", html:"Un signal x(t) est <strong>causal</strong> s'il est nul pour toute valeur négative de t. Autrement dit, un signal causal n'existe pas avant l'instant de référence t = 0."},
+      {type:"signal-pair", left:{chart:"causal", caption:"Causal"}, right:{chart:"noncausal", caption:"Non-causal"}},
+      {type:"subheading", text:"4.4 À énergie finie"},
+      {type:"p", html:"Un signal possède une <strong>énergie finie</strong> si son énergie totale est finie. L'énergie d'un signal x(t) est donnée par :"},
+      {type:"formula", lines:["E &nbsp;=&nbsp; ∫<sub>−∞</sub><sup>+∞</sup> |x(t)|² dt"]},
+      {type:"chart", chart:"energy", caption:"Énergie = aire sous |x(t)|²"},
+      {type:"p", html:"La puissance du signal est donnée par :"},
+      {type:"formula", lines:["P<sub>x</sub> &nbsp;=&nbsp; lim<sub>T→∞</sub> (1/T) ∫<sub>−T/2</sub><sup>T/2</sup> |x(t)|² dt"], note:"T est la durée d'observation."},
+      {type:"p", html:"Pour un signal périodique de période T₀, la puissance moyenne est donnée par :"},
+      {type:"formula", lines:["P &nbsp;=&nbsp; (1/T₀) ∫<sub>t₀</sub><sup>t₀+T₀</sup> |x(t)|² dt"]}
+    ]}
+  ]
+};
+
+/* =========================================================================
+   SMALL DOM HELPER
+   ========================================================================= */
+function el(tag, attrs, children) {
+  attrs = attrs || {}; children = children || [];
+  var e = document.createElement(tag);
+  for (var k in attrs) {
+    if (!attrs.hasOwnProperty(k)) continue;
+    if (k === 'class') e.className = attrs[k];
+    else if (k === 'html') e.innerHTML = attrs[k];
+    else e.setAttribute(k, attrs[k]);
+  }
+  if (!Array.isArray(children)) children = [children];
+  children.forEach(function (c) {
+    if (c === null || c === undefined) return;
+    e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+  });
+  return e;
+}
+
+/* =========================================================================
+   CHART ENGINE
+   ========================================================================= */
+var SVG_NS = 'http://www.w3.org/2000/svg';
+function svgEl(tag, attrs) {
+  var e = document.createElementNS(SVG_NS, tag);
+  for (var k in attrs) { if (attrs.hasOwnProperty(k)) e.setAttribute(k, attrs[k]); }
+  return e;
+}
+
+function mulberry32(seed) {
+  return function () {
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    var t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function smoothPath(pts) {
+  if (pts.length < 2) return '';
+  if (pts.length === 2) return 'M ' + pts[0][0] + ',' + pts[0][1] + ' L ' + pts[1][0] + ',' + pts[1][1];
+  var d = 'M ' + pts[0][0] + ',' + pts[0][1];
+  for (var i = 0; i < pts.length - 1; i++) {
+    var p0 = pts[i - 1] || pts[i];
+    var p1 = pts[i];
+    var p2 = pts[i + 1];
+    var p3 = pts[i + 2] || p2;
+    var c1x = p1[0] + (p2[0] - p0[0]) / 6;
+    var c1y = p1[1] + (p2[1] - p0[1]) / 6;
+    var c2x = p2[0] - (p3[0] - p1[0]) / 6;
+    var c2y = p2[1] - (p3[1] - p1[1]) / 6;
+    d += ' C ' + c1x + ',' + c1y + ' ' + c2x + ',' + c2y + ' ' + p2[0] + ',' + p2[1];
+  }
+  return d;
+}
+function linearPath(pts) {
+  var d = 'M ' + pts[0][0] + ',' + pts[0][1];
+  for (var i = 1; i < pts.length; i++) d += ' L ' + pts[i][0] + ',' + pts[i][1];
+  return d;
+}
+
+var CHART_SIZE = { w: 400, h: 220 };
+var PAD = { l: 34, r: 18, t: 18, b: 26 };
+
+function makeMapper(domain) {
+  var tMin = domain.tMin, tMax = domain.tMax, yMin = domain.yMin, yMax = domain.yMax;
+  var w = CHART_SIZE.w, h = CHART_SIZE.h;
+  var innerW = w - PAD.l - PAD.r, innerH = h - PAD.t - PAD.b;
+  return function (pt) {
+    var t = pt[0], y = pt[1];
+    var x = PAD.l + (t - tMin) / (tMax - tMin) * innerW;
+    var yy = PAD.t + innerH - (y - yMin) / (yMax - yMin) * innerH;
+    return [x, yy];
+  };
+}
+
+function drawAxes(svg, domain, labels) {
+  var map = makeMapper(domain);
+  var w = CHART_SIZE.w, h = CHART_SIZE.h;
+  var defs = svgEl('defs', {});
+  var marker = svgEl('marker', { id: 'arrow-' + Math.random().toString(36).slice(2), markerWidth: '8', markerHeight: '8', refX: '6', refY: '4', orient: 'auto' });
+  var markerId = marker.getAttribute('id');
+  marker.appendChild(svgEl('path', { d: 'M0,0 L8,4 L0,8 Z', fill: 'var(--chart-axis)' }));
+  defs.appendChild(marker);
+  svg.appendChild(defs);
+
+  var origin = map([Math.max(domain.tMin, Math.min(0, domain.tMax)), 0]);
+  var xAxisY = (domain.yMin <= 0 && domain.yMax >= 0) ? origin[1] : (h - PAD.b);
+  var yAxisX = (domain.tMin <= 0 && domain.tMax >= 0) ? origin[0] : PAD.l;
+
+  svg.appendChild(svgEl('line', { class: 'chart-axis', x1: PAD.l - 4, y1: xAxisY, x2: w - PAD.r + 2, y2: xAxisY, 'marker-end': 'url(#' + markerId + ')' }));
+  svg.appendChild(svgEl('line', { class: 'chart-axis', x1: yAxisX, y1: h - PAD.b + 4, x2: yAxisX, y2: PAD.t - 2, 'marker-end': 'url(#' + markerId + ')' }));
+
+  if (labels && labels.t) svg.appendChild(svgEl('text', { class: 'chart-label', x: w - PAD.r + 4, y: xAxisY + 4, html: labels.t }));
+  if (labels && labels.y) svg.appendChild(svgEl('text', { class: 'chart-label', x: yAxisX + 6, y: PAD.t - 4, html: labels.y }));
+
+  return { map: map, xAxisY: xAxisY, yAxisX: yAxisX };
+}
+
+function drawCurve(svg, points, opts) {
+  opts = opts || {};
+  var pathData = opts.mode === 'linear' ? linearPath(points) : smoothPath(points);
+  var p = svgEl('path', { class: 'chart-path' + (opts.alt ? ' chart-path-alt' : ''), d: pathData });
+  svg.appendChild(p);
+  return p;
+}
+
+function seriesPoints(map, tArr, yFn) {
+  return tArr.map(function (t) { return map([t, yFn(t)]); });
+}
+function range(a, b, n) {
+  var out = []; for (var i = 0; i <= n; i++) out.push(a + (b - a) * i / n); return out;
+}
+
+function baseChart(vb) {
+  return svgEl('svg', { class: 'chart-svg', viewBox: '0 0 ' + CHART_SIZE.w + ' ' + CHART_SIZE.h, preserveAspectRatio: 'xMidYMid meet' });
+}
+
+var CHART_BUILDERS = {
+
+  periodic: function () {
+    var d = { tMin: -5, tMax: 5, yMin: -1.6, yMax: 1.6 };
+    var svg = baseChart(); var ax = drawAxes(svg, d, { t: 't', y: 'x(t)' });
+    var ts = range(d.tMin, d.tMax, 80);
+    drawCurve(svg, seriesPoints(ax.map, ts, function (t) { return 1.2 * Math.sin(t * 1.4); }));
+    return svg;
+  },
+
+  'periodic-small': function () { return CHART_BUILDERS.periodic(); },
+
+  aperiodic: function () {
+    var d = { tMin: -5, tMax: 5, yMin: -1.8, yMax: 1.8 };
+    var svg = baseChart(); var ax = drawAxes(svg, d, { t: 't', y: 'x(t)' });
+    var ts = range(d.tMin, d.tMax, 100);
+    drawCurve(svg, seriesPoints(ax.map, ts, function (t) {
+      return 0.7 * Math.sin(t * 1.3) + 0.5 * Math.sin(t * 2.77 + 1.1) + 0.3 * Math.sin(t * 0.6 + 0.4);
+    }));
+    return svg;
+  },
+
+  transitoire: function () {
+    var d = { tMin: -5, tMax: 5, yMin: -1.4, yMax: 1.6 };
+    var svg = baseChart(); var ax = drawAxes(svg, d, { t: 't', y: 'x(t)' });
+    var ts = range(d.tMin, d.tMax, 100);
+    drawCurve(svg, seriesPoints(ax.map, ts, function (t) {
+      if (t < -1) return 0;
+      return Math.exp(-0.9 * (t + 1)) * Math.sin(4.2 * (t + 1)) * 1.4;
+    }));
+    return svg;
+  },
+
+  stationary: function () {
+    var d = { tMin: -5, tMax: 5, yMin: -2.2, yMax: 2.2 };
+    var svg = baseChart(); var ax = drawAxes(svg, d, { t: 't', y: 'x(t)' });
+    var rnd = mulberry32(7);
+    var ts = range(d.tMin, d.tMax, 90);
+    var pts = ts.map(function (t) {
+      var y = 0.9 * Math.sin(t * 2.1) + 0.6 * Math.sin(t * 5.3 + 1) + (rnd() - 0.5) * 1.1;
+      return [t, y];
+    });
+    drawCurve(svg, pts.map(function (p) { return ax.map(p); }));
+    return svg;
+  },
+
+  nonstationary: function () {
+    var d = { tMin: -5, tMax: 5, yMin: -2.6, yMax: 2.6 };
+    var svg = baseChart(); var ax = drawAxes(svg, d, { t: 't', y: 'x(t)' });
+    var rnd = mulberry32(11);
+    var ts = range(d.tMin, d.tMax, 90);
+    var pts = ts.map(function (t) {
+      var envelope = 0.3 + 0.9 * ((t - d.tMin) / (d.tMax - d.tMin));
+      var y = envelope * (0.8 * Math.sin(t * 2.1) + (rnd() - 0.5) * 1.6);
+      return [t, y];
+    });
+    drawCurve(svg, pts.map(function (p) { return ax.map(p); }));
+    return svg;
+  },
+
+  bandwidth: function () {
+    var d = { tMin: 0, tMax: 10, yMin: 0, yMax: 1.3 };
+    var svg = baseChart();
+    var ax = drawAxes(svg, d, { t: 'Fréquence f', y: 'Puissance' });
+    var ts = range(d.tMin, d.tMax, 100);
+    var fmin = 3.2, fmax = 6.8, mid = (fmin + fmax) / 2, width = (fmax - fmin) / 2;
+    var pts = seriesPoints(ax.map, ts, function (t) {
+      return Math.exp(-Math.pow((t - mid) / (width * 0.75), 2)) * 1.05;
+    });
+    var areaPts = pts.slice();
+    var base = ax.map([d.tMax, 0])[1];
+    var fillD = 'M ' + ax.map([d.tMin, 0])[0] + ',' + base + ' L ' + areaPts.map(function (p) { return p[0] + ',' + p[1]; }).join(' L ') + ' L ' + ax.map([d.tMax, 0])[0] + ',' + base + ' Z';
+    svg.appendChild(svgEl('path', { class: 'chart-fillarea', d: fillD }));
+    drawCurve(svg, pts);
+    var yMinPos = ax.map([fmin, 0]), yMaxPos = ax.map([fmax, 0]);
+    svg.appendChild(svgEl('line', { class: 'chart-guide', x1: yMinPos[0], y1: PAD.t, x2: yMinPos[0], y2: base }));
+    svg.appendChild(svgEl('line', { class: 'chart-guide', x1: yMaxPos[0], y1: PAD.t, x2: yMaxPos[0], y2: base }));
+    var midY = base - 14;
+    svg.appendChild(svgEl('line', { class: 'chart-axis', x1: yMinPos[0], y1: midY, x2: yMaxPos[0], y2: midY }));
+    svg.appendChild(svgEl('text', { class: 'chart-label', x: (yMinPos[0] + yMaxPos[0]) / 2 - 8, y: midY - 5, html: 'Δf' }));
+    svg.appendChild(svgEl('text', { class: 'chart-label', x: yMinPos[0] - 10, y: base + 16, html: 'Fmin' }));
+    svg.appendChild(svgEl('text', { class: 'chart-label', x: yMaxPos[0] - 10, y: base + 16, html: 'Fmax' }));
+    return svg;
+  },
+
+  sgn: function () {
+    var d = { tMin: -5, tMax: 5, yMin: -1.6, yMax: 1.6 };
+    var svg = baseChart(); var ax = drawAxes(svg, d, { t: 't', y: 'sgn(t)' });
+    drawCurve(svg, [ax.map([d.tMin, -1]), ax.map([-0.03, -1])], { mode: 'linear' });
+    drawCurve(svg, [ax.map([0.03, 1]), ax.map([d.tMax, 1])], { mode: 'linear' });
+    svg.appendChild(svgEl('line', { class: 'chart-guide', x1: ax.map([0, 0])[0], y1: ax.map([0, -1])[1], x2: ax.map([0, 0])[0], y2: ax.map([0, 1])[1] }));
+    svg.appendChild(svgEl('circle', { class: 'chart-mark-filled', cx: ax.map([0, 0])[0], cy: ax.map([0, 0])[1], r: 3 }));
+    return svg;
+  },
+
+  step: function () {
+    var d = { tMin: -5, tMax: 5, yMin: -0.5, yMax: 1.6 };
+    var svg = baseChart(); var ax = drawAxes(svg, d, { t: 't', y: 'u(t)' });
+    drawCurve(svg, [ax.map([d.tMin, 0]), ax.map([-0.03, 0])], { mode: 'linear' });
+    drawCurve(svg, [ax.map([0.03, 1]), ax.map([d.tMax, 1])], { mode: 'linear' });
+    svg.appendChild(svgEl('line', { class: 'chart-guide', x1: ax.map([0, 0])[0], y1: ax.map([0, 0])[1], x2: ax.map([0, 0])[0], y2: ax.map([0, 1])[1] }));
+    svg.appendChild(svgEl('circle', { class: 'chart-mark-filled', cx: ax.map([0, 0.5])[0], cy: ax.map([0, 0.5])[1], r: 3 }));
+    return svg;
+  },
+
+  ramp: function () {
+    var d = { tMin: -5, tMax: 5, yMin: -0.5, yMax: 5 };
+    var svg = baseChart(); var ax = drawAxes(svg, d, { t: 't', y: 'r(t)' });
+    drawCurve(svg, [ax.map([d.tMin, 0]), ax.map([0, 0]), ax.map([d.tMax, d.tMax])], { mode: 'linear' });
+    return svg;
+  },
+
+  rect: function () {
+    var d = { tMin: -5, tMax: 5, yMin: -0.5, yMax: 1.6 };
+    var svg = baseChart(); var ax = drawAxes(svg, d, { t: 't', y: 'rect(t/T)' });
+    var T = 3;
+    drawCurve(svg, [ax.map([d.tMin, 0]), ax.map([-T / 2 - 0.02, 0])], { mode: 'linear' });
+    drawCurve(svg, [ax.map([-T / 2, 1]), ax.map([T / 2, 1])], { mode: 'linear' });
+    drawCurve(svg, [ax.map([T / 2 + 0.02, 0]), ax.map([d.tMax, 0])], { mode: 'linear' });
+    svg.appendChild(svgEl('line', { class: 'chart-guide', x1: ax.map([-T / 2, 0])[0], y1: ax.map([-T / 2, 0])[1], x2: ax.map([-T / 2, 0])[0], y2: ax.map([-T / 2, 1])[1] }));
+    svg.appendChild(svgEl('line', { class: 'chart-guide', x1: ax.map([T / 2, 0])[0], y1: ax.map([T / 2, 0])[1], x2: ax.map([T / 2, 0])[0], y2: ax.map([T / 2, 1])[1] }));
+    svg.appendChild(svgEl('text', { class: 'chart-label', x: ax.map([-T / 2, 0])[0] - 14, y: ax.map([0, 0])[1] + 16, html: '−T/2' }));
+    svg.appendChild(svgEl('text', { class: 'chart-label', x: ax.map([T / 2, 0])[0] - 8, y: ax.map([0, 0])[1] + 16, html: 'T/2' }));
+    return svg;
+  },
+
+  dirac: function () {
+    var d = { tMin: -5, tMax: 5, yMin: -0.4, yMax: 1.6 };
+    var svg = baseChart(); var ax = drawAxes(svg, d, { t: 't', y: 'δ(t)' });
+    var top = ax.map([0, 1.3]), bottom = ax.map([0, 0]);
+    var defs = svgEl('defs', {});
+    var marker = svgEl('marker', { id: 'dirac-arrow', markerWidth: '10', markerHeight: '10', refX: '5', refY: '8', orient: 'auto' });
+    marker.appendChild(svgEl('path', { d: 'M0,8 L5,0 L10,8 Z', fill: 'var(--chart-line)' }));
+    defs.appendChild(marker); svg.appendChild(defs);
+    svg.appendChild(svgEl('line', { x1: bottom[0], y1: bottom[1], x2: top[0], y2: top[1], stroke: 'var(--chart-line)', 'stroke-width': 3, 'marker-end': 'url(#dirac-arrow)' }));
+    svg.appendChild(svgEl('text', { class: 'chart-label', x: top[0] + 8, y: top[1] + 4, html: '1' }));
+    return svg;
+  },
+
+  causal: function () {
+    var d = { tMin: -5, tMax: 5, yMin: -1.3, yMax: 1.5 };
+    var svg = baseChart(); var ax = drawAxes(svg, d, { t: 't', y: '' });
+    var ts = range(0, d.tMax, 60);
+    drawCurve(svg, [ax.map([d.tMin, 0]), ax.map([0, 0])].concat(seriesPoints(ax.map, ts, function (t) { return Math.exp(-0.7 * t) * Math.sin(4 * t) * 1.3; })));
+    return svg;
+  },
+
+  noncausal: function () {
+    var d = { tMin: -5, tMax: 5, yMin: -1.5, yMax: 1.5 };
+    var svg = baseChart(); var ax = drawAxes(svg, d, { t: 't', y: '' });
+    var ts = range(d.tMin, d.tMax, 90);
+    drawCurve(svg, seriesPoints(ax.map, ts, function (t) { return Math.exp(-Math.pow(t / 3.5, 2)) * Math.sin(2 * t + 0.6) * 1.3; }));
+    return svg;
+  },
+
+  energy: function () {
+    var d = { tMin: -5, tMax: 5, yMin: -0.2, yMax: 1.4 };
+    var svg = baseChart(); var ax = drawAxes(svg, d, { t: 't', y: '|x(t)|²' });
+    var ts = range(d.tMin, d.tMax, 100);
+    var pts = seriesPoints(ax.map, ts, function (t) { return Math.pow(Math.exp(-Math.pow(t / 1.6, 2)), 1) * 1.2; });
+    var base = ax.map([d.tMin, 0])[1];
+    var fillD = 'M ' + pts[0][0] + ',' + base + ' L ' + pts.map(function (p) { return p[0] + ',' + p[1]; }).join(' L ') + ' L ' + pts[pts.length - 1][0] + ',' + base + ' Z';
+    svg.appendChild(svgEl('path', { class: 'chart-fillarea', d: fillD }));
+    drawCurve(svg, pts);
+    return svg;
+  },
+
+  parity1: function () { // paire
+    var d = { tMin: -5, tMax: 5, yMin: -0.5, yMax: 6.5 };
+    var svg = baseChart(); var ax = drawAxes(svg, d, {});
+    drawCurve(svg, seriesPoints(ax.map, range(d.tMin, d.tMax, 60), function (t) { return t * t / 4; }));
+    return svg;
+  },
+  parity2: function () { // ni
+    var d = { tMin: -5, tMax: 5, yMin: -0.5, yMax: 6 };
+    var svg = baseChart(); var ax = drawAxes(svg, d, {});
+    drawCurve(svg, seriesPoints(ax.map, range(d.tMin, d.tMax, 60), function (t) { return 5 * Math.exp(-Math.pow((t - 1.4) / 1.8, 2)); }));
+    return svg;
+  },
+  parity3: function () { // impaire
+    var d = { tMin: -5, tMax: 5, yMin: -3.2, yMax: 3.2 };
+    var svg = baseChart(); var ax = drawAxes(svg, d, {});
+    drawCurve(svg, seriesPoints(ax.map, range(d.tMin, d.tMax, 70), function (t) { return t * Math.exp(-Math.pow(t / 2.8, 2)) * 3.4; }));
+    return svg;
+  },
+  parity4: function () { // ni
+    var d = { tMin: -5, tMax: 5, yMin: -1, yMax: 5.5 };
+    var svg = baseChart(); var ax = drawAxes(svg, d, {});
+    drawCurve(svg, seriesPoints(ax.map, range(d.tMin, d.tMax, 70), function (t) { return t > 0 ? t : 0.15 * t; }));
+    return svg;
+  },
+  parity5: function () { // impaire
+    var d = { tMin: -5, tMax: 5, yMin: -3.5, yMax: 3.5 };
+    var svg = baseChart(); var ax = drawAxes(svg, d, {});
+    drawCurve(svg, seriesPoints(ax.map, range(d.tMin, d.tMax, 70), function (t) { return 3 * Math.sin(t); }));
+    return svg;
+  },
+  parity6: function () { // paire
+    var d = { tMin: -5, tMax: 5, yMin: -3.5, yMax: 3.5 };
+    var svg = baseChart(); var ax = drawAxes(svg, d, {});
+    drawCurve(svg, seriesPoints(ax.map, range(d.tMin, d.tMax, 70), function (t) { return 3 * Math.cos(t); }));
+    return svg;
+  }
+};
+
+function buildChart(type) {
+  var fn = CHART_BUILDERS[type];
+  if (!fn) { var s = baseChart(); return s; }
+  return fn();
+}
+
+/* Small morphological classification grid (2x2) */
+function buildMiniPanel(kind) {
+  var d = { tMin: 0, tMax: 10, yMin: -1.4, yMax: 1.4 };
+  var svg = svgEl('svg', { class: 'chart-svg', viewBox: '0 0 200 110' });
+  var oldSize = { w: CHART_SIZE.w, h: CHART_SIZE.h }, oldPad = { l: PAD.l, r: PAD.r, t: PAD.t, b: PAD.b };
+  CHART_SIZE.w = 200; CHART_SIZE.h = 110; PAD.l = 18; PAD.r = 8; PAD.t = 10; PAD.b = 18;
+  var ax = drawAxes(svg, d, {});
+  var envelope = function (t) { return Math.sin(t * 0.9) * 0.6 + Math.sin(t * 0.4) * 0.5; };
+  if (kind === 'cc') {
+    drawCurve(svg, seriesPoints(ax.map, range(d.tMin, d.tMax, 60), envelope));
+  } else if (kind === 'cd') {
+    var steps = 9, pts = [];
+    for (var i = 0; i <= steps; i++) {
+      var t0 = d.tMin + (d.tMax - d.tMin) * i / steps;
+      var t1 = d.tMin + (d.tMax - d.tMin) * (i + 1) / steps;
+      var y = Math.round(envelope((t0 + t1) / 2) * 3) / 3;
+      pts.push(ax.map([t0, y])); pts.push(ax.map([t1, y]));
+    }
+    drawCurve(svg, pts, { mode: 'linear' });
+  } else if (kind === 'dc') {
+    var n = 10;
+    for (var j = 0; j <= n; j++) {
+      var t = d.tMin + (d.tMax - d.tMin) * j / n;
+      var y = envelope(t);
+      var top = ax.map([t, y]), bot = ax.map([t, 0]);
+      svg.appendChild(svgEl('line', { class: 'chart-axis', x1: bot[0], y1: bot[1], x2: top[0], y2: top[1] }));
+      svg.appendChild(svgEl('circle', { class: 'chart-mark-filled', cx: top[0], cy: top[1], r: 2.4 }));
+    }
+  } else if (kind === 'dd') {
+    var n2 = 10;
+    for (var k = 0; k <= n2; k++) {
+      var t2 = d.tMin + (d.tMax - d.tMin) * k / n2;
+      var y2 = Math.round(envelope(t2) * 3) / 3;
+      var top2 = ax.map([t2, y2]), bot2 = ax.map([t2, 0]);
+      svg.appendChild(svgEl('line', { class: 'chart-axis', x1: bot2[0], y1: bot2[1], x2: top2[0], y2: top2[1] }));
+      svg.appendChild(svgEl('circle', { class: 'chart-mark-filled', cx: top2[0], cy: top2[1], r: 2.4 }));
+    }
+  }
+  CHART_SIZE.w = oldSize.w; CHART_SIZE.h = oldSize.h;
+  PAD.l = oldPad.l; PAD.r = oldPad.r; PAD.t = oldPad.t; PAD.b = oldPad.b;
+  return svg;
+}
+
+/* =========================================================================
+   BLOCK RENDERERS
+   ========================================================================= */
+function chartCard(type, caption) {
+  var card = el('div', { class: 'chart-card' });
+  card.appendChild(buildChart(type));
+  if (caption) card.appendChild(el('p', { class: 'chart-caption' }, caption));
+  return card;
+}
+
+function renderBlock(b) {
+  switch (b.type) {
+    case 'subheading':
+      return el('h3', { class: 'font-sans font-semibold text-sm tracking-wide mb-4 mt-2', style: 'color:var(--text-soft);' }, b.text);
+
+    case 'p':
+      return el('p', { class: 'mb-4 leading-relaxed', html: b.html });
+
+    case 'list':
+      return el('ul', { class: 'list-disc pl-6 space-y-1.5 mb-6 text-[15px]' },
+        b.items.map(function (it) { return el('li', { html: it }); }));
+
+    case 'callout':
+      var box = el('div', { class: 'rounded-sm p-5 sm:p-6 mb-8', style: 'background:var(--bg-panel);' });
+      box.appendChild(el('p', { class: 'font-sans text-[13px] mb-3', style: 'color:var(--text-soft);' }, b.title));
+      box.appendChild(el('ul', { class: 'space-y-2 text-[15px]' }, b.items.map(function (it) { return el('li', {}, it); })));
+      return box;
+
+    case 'definition':
+      var defBox = el('div', { class: 'border rounded-sm p-4 sm:p-5 mb-6', style: 'border-color:var(--border);' });
+      defBox.appendChild(el('p', { class: 'text-[15px] leading-relaxed', html: '<strong>' + b.term + '</strong> : ' + b.def }));
+      return defBox;
+
+    case 'examples':
+      var wrap = el('div', { class: 'space-y-3 mb-8' });
+      wrap.appendChild(el('p', { class: 'font-sans text-[11px]', style: 'color:var(--text-faint);' }, b.label));
+      b.items.forEach(function (ex) {
+        var card = el('div', { class: 'border rounded-sm p-4', style: 'border-color:var(--border);' });
+        card.appendChild(el('p', { class: 'font-sans font-semibold text-sm mb-2' }, ex.title));
+        card.appendChild(el('p', { class: 'text-sm', style: 'color:var(--text-soft);' }, 'Info physique : ' + ex.physique));
+        card.appendChild(el('p', { class: 'text-sm mt-1' }, 'Représentation : ' + ex.representation));
+        wrap.appendChild(card);
+      });
+      return wrap;
+
+    case 'formula':
+      var f = el('div', { class: 'formula rounded-sm px-5 py-4 mb-3 text-sm' });
+      b.lines.forEach(function (line) { f.appendChild(el('p', { class: 'mb-1', html: line, style: 'color:var(--gold);' })); });
+      var out = el('div', { class: 'mb-8' }, [f]);
+      if (b.note) out.appendChild(el('p', { class: 'text-sm', style: 'color:var(--text-faint);', html: b.note }));
+      return out;
+
+    case 'table':
+      var tblWrap = el('div', { class: 'overflow-x-auto mb-8 -mx-1' });
+      var table = el('table', { class: 'tbl w-full text-sm border-collapse min-w-[420px]' });
+      var thead = el('thead', {});
+      var trh = el('tr', { class: 'font-sans text-[11px] border-b', style: 'color:var(--text-faint);' });
+      b.headers.forEach(function (h) { trh.appendChild(el('th', { class: 'text-left py-2 pr-3 font-normal', html: h })); });
+      thead.appendChild(trh); table.appendChild(thead);
+      var tbody = el('tbody', {});
+      b.rows.forEach(function (row) {
+        var tr = el('tr', { class: 'border-b' });
+        row.forEach(function (cell) { tr.appendChild(el('td', { class: 'py-2.5 pr-3', html: cell })); });
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      tblWrap.appendChild(table);
+      return tblWrap;
+
+    case 'chart':
+      return el('div', { class: 'mb-8 max-w-sm mx-auto' }, [chartCard(b.chart, b.caption)]);
+
+    case 'chart-row':
+      var row = el('div', { class: 'grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8' });
+      b.charts.forEach(function (c) { row.appendChild(chartCard(c.chart, c.caption)); });
+      return row;
+
+    case 'signal-pair':
+      var pair = el('div', { class: 'grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8' });
+      pair.appendChild(chartCard(b.left.chart, b.left.caption));
+      pair.appendChild(chartCard(b.right.chart, b.right.caption));
+      return pair;
+
+    case 'signal-grid':
+      var gridWrap = el('div', { class: 'border rounded-sm p-4 sm:p-6 mb-8 overflow-x-auto', style: 'border-color:var(--border);' });
+      var gridInner = el('div', { class: 'min-w-[460px]' });
+      var head = el('div', { class: 'grid grid-cols-[70px_1fr_1fr] font-sans text-[12px] mb-2', style: 'color:var(--text-faint);' }, [
+        el('div', {}), el('div', { class: 'text-center' }, 'Amplitude continue'), el('div', { class: 'text-center' }, 'Amplitude discrète')
+      ]);
+      gridInner.appendChild(head);
+      var row1 = el('div', { class: 'grid grid-cols-[70px_1fr_1fr] items-center gap-2 mb-2' }, [
+        el('div', { class: 'font-sans text-[12px]', style: 'color:var(--text-faint);' }, 'Temps continu'),
+        el('div', { class: 'border rounded-sm p-2', style: 'border-color:var(--border);' }, [buildMiniPanel('cc')]),
+        el('div', { class: 'border rounded-sm p-2', style: 'border-color:var(--border);' }, [buildMiniPanel('cd')])
+      ]);
+      var row2 = el('div', { class: 'grid grid-cols-[70px_1fr_1fr] items-center gap-2' }, [
+        el('div', { class: 'font-sans text-[12px]', style: 'color:var(--text-faint);' }, 'Temps discret'),
+        el('div', { class: 'border rounded-sm p-2', style: 'border-color:var(--border);' }, [buildMiniPanel('dc')]),
+        el('div', { class: 'border rounded-sm p-2', style: 'border-color:var(--border);' }, [buildMiniPanel('dd')])
+      ]);
+      gridInner.appendChild(row1); gridInner.appendChild(row2);
+      gridWrap.appendChild(gridInner);
+      return gridWrap;
+
+    case 'exercise-parity':
+      var exWrap = el('div', { class: 'mb-8' });
+      var grid = el('div', { class: 'grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4' });
+      var answers = [
+        { n: 1, kind: 'paire' }, { n: 2, kind: 'ni' }, { n: 3, kind: 'impaire' },
+        { n: 4, kind: 'ni' }, { n: 5, kind: 'impaire' }, { n: 6, kind: 'paire' }
+      ];
+      answers.forEach(function (a) {
+        var card = el('div', { class: 'chart-card' });
+        var badge = a.kind === 'paire' ? '<span class="badge badge-paire">?</span>' : a.kind === 'impaire' ? '<span class="badge badge-impaire">?</span>' : '<span class="badge badge-ni">?</span>';
+        card.appendChild(el('p', { class: 'font-sans text-[11px] mb-1', style: 'color:var(--text-faint);' }, 'Fonction ' + a.n));
+        card.appendChild(buildChart('parity' + a.n));
+        grid.appendChild(card);
+      });
+      exWrap.appendChild(el('p', { class: 'mb-4 leading-relaxed' }, 'À partir de la courbe de chacune des fonctions ci-dessous, dire si elle semble paire, impaire, ou ni paire ni impaire.'));
+      exWrap.appendChild(grid);
+
+      var details = el('details', { class: 'border rounded-sm', style: 'border-color:var(--border);' });
+      var summary = el('summary', { class: 'flex items-center justify-between gap-4 p-4 sm:p-5' }, [
+        el('span', { class: 'text-[15px] font-sans' }, 'Afficher la correction'),
+        el('span', { class: 'chev font-sans shrink-0' }, '›')
+      ]);
+      details.appendChild(summary);
+      var corrBody = el('div', { class: 'px-4 sm:px-5 pb-5 pt-1 border-t', style: 'border-color:var(--border);' });
+      var corrTexts = {
+        1: 'symétrique par rapport à l\'axe des ordonnées &rarr; <strong>paire</strong>.',
+        2: 'ni symétrique par rapport à l\'axe des ordonnées, ni par rapport à l\'origine &rarr; <strong>ni paire, ni impaire</strong>.',
+        3: 'symétrique par rapport à l\'origine du repère &rarr; <strong>impaire</strong>.',
+        4: 'ni symétrique par rapport à l\'axe des ordonnées, ni par rapport à l\'origine &rarr; <strong>ni paire, ni impaire</strong>.',
+        5: 'symétrique par rapport à l\'origine du repère &rarr; <strong>impaire</strong>.',
+        6: 'symétrique par rapport à l\'axe des ordonnées &rarr; <strong>paire</strong>.'
+      };
+      var list = el('ul', { class: 'space-y-2 text-sm mt-2' });
+      answers.forEach(function (a) {
+        var badgeClass = a.kind === 'paire' ? 'badge-paire' : a.kind === 'impaire' ? 'badge-impaire' : 'badge-ni';
+        var badgeLabel = a.kind === 'paire' ? 'paire' : a.kind === 'impaire' ? 'impaire' : 'ni-ni';
+        var li = el('li', { class: 'flex items-start gap-3' });
+        li.appendChild(el('span', { class: 'badge ' + badgeClass }, badgeLabel));
+        li.appendChild(el('span', { html: 'Fonction ' + a.n + ' — ' + corrTexts[a.n], style: 'color:var(--text-soft);' }));
+        list.appendChild(li);
+      });
+      corrBody.appendChild(list);
+      details.appendChild(corrBody);
+      exWrap.appendChild(details);
+      return exWrap;
+
+    default:
+      return el('div', {});
+  }
+}
+
+/* =========================================================================
+   PAGE BUILD
+   ========================================================================= */
+var navList = document.getElementById('navList');
+var content = document.getElementById('content');
+var SECTION_IDS = [];
+var CHAPTER_ID = 'technologies-multimedias-ch1';
+
+var pageIndicator = el('div', { class: 'flex items-center justify-between font-sans text-xs mb-10 pb-4 border-b', style: 'color:var(--text-faint); border-color:var(--border);' }, [
+  el('span', {}, ['Section ', el('span', { 'data-page-index': '' }, '1'), ' / ', el('span', { 'data-page-total': '' }, String(COURSE.sections.length))]),
+  el('a', { href: '#accueil', style: 'color:inherit;' }, '\u2190 Retour au sommaire')
+]);
+content.appendChild(pageIndicator);
+
+COURSE.sections.forEach(function (sec) {
+  SECTION_IDS.push(sec.id);
+
+  // nav item
+  var li = el('li', { class: 'flex items-center gap-2' }, [
+    el('a', { href: '#' + sec.id, class: 'navlink flex-1 py-0.5' }, sec.num.replace(/^0/, '') + '. ' + sec.title),
+    el('span', { class: 'nav-check font-sans text-[10px]', 'data-section': sec.id, style: 'color:var(--teal); opacity:0; transition:opacity .15s ease;', html: '&#10003;' })
+  ]);
+  navList.appendChild(li);
+
+  // section
+  var section = el('section', { id: sec.id, class: 'mb-16 scroll-mt-24' });
+  section.appendChild(el('p', { class: 'section-num text-sm mb-2' }, sec.num));
+  section.appendChild(el('h2', { class: 'font-serif text-2xl sm:text-3xl mb-6' }, sec.title));
+  sec.blocks.forEach(function (b) { section.appendChild(renderBlock(b)); });
+
+  var progressBar = el('div', { class: 'mt-10 pt-6 border-t flex items-center justify-end', style: 'border-color:var(--border);' }, [
+    el('button', { class: 'progress-btn font-sans text-xs px-4 py-2 rounded-sm border inline-flex items-center gap-1.5', 'data-section': sec.id, 'data-done': 'false', style: 'border-color:var(--border); background:var(--bg-panel); color:var(--text-soft);' }, [
+      el('span', { class: 'check', style: 'opacity:0; transition:opacity .15s ease;', html: '&#10003;' }),
+      el('span', { class: 'label' }, 'Marquer comme lu')
+    ])
+  ]);
+  section.appendChild(progressBar);
+
+  content.appendChild(section);
+});
+
+var pagerNav = el('div', { class: 'flex items-center justify-between gap-4 mt-4 font-sans text-sm' }, [
+  el('button', { type: 'button', 'data-page-prev': '', class: 'flex-1 text-left border rounded-sm px-4 py-3', style: 'border-color:var(--border);' }, [
+    el('span', { class: 'block text-[11px] mb-0.5', style: 'color:var(--text-faint);' }, '\u2190 Pr\u00e9c\u00e9dent'),
+    el('span', { 'data-page-nav-label': '', class: 'block' })
+  ]),
+  el('button', { type: 'button', 'data-page-next': '', class: 'flex-1 text-right border rounded-sm px-4 py-3', style: 'border-color:var(--border);' }, [
+    el('span', { class: 'block text-[11px] mb-0.5', style: 'color:var(--text-faint);' }, 'Suivant \u2192'),
+    el('span', { 'data-page-nav-label': '', class: 'block' })
+  ])
+]);
+content.appendChild(pagerNav);
+
+/* =========================================================================
+   THEME (thème clair/sombre géré par assets/app.js — Courhub.initTheme)
+   ========================================================================= */
+Courhub.initTheme();
+
+/* =========================================================================
+   MOBILE NAV
+   ========================================================================= */
+var sidebar = document.getElementById('sidebar');
+var scrim = document.getElementById('scrim');
+document.getElementById('navToggle').addEventListener('click', function () { sidebar.classList.add('open'); scrim.classList.add('open'); });
+document.getElementById('navClose').addEventListener('click', function () { sidebar.classList.remove('open'); scrim.classList.remove('open'); });
+scrim.addEventListener('click', function () { sidebar.classList.remove('open'); scrim.classList.remove('open'); });
+sidebar.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', function () { sidebar.classList.remove('open'); scrim.classList.remove('open'); }); });
+
+/* =========================================================================
+   READING PROGRESS (stockage partagé courhub:progress:<chapterId>, pour que
+   la page d'accueil du site puisse aussi lire la progression de ce chapitre)
+   ========================================================================= */
+function renderProgress() {
+  var data = Courhub.progress.getProgress(CHAPTER_ID);
+  var stats = Courhub.progress.computeStats(data, SECTION_IDS.length);
+  document.querySelectorAll('.progress-count').forEach(function (el2) { el2.textContent = stats.done + ' / ' + stats.total + ' sections lues'; });
+  document.querySelectorAll('.progress-bar-fill').forEach(function (el2) { el2.style.width = stats.pct + '%'; });
+  document.querySelectorAll('[data-progress-today]').forEach(function (el2) { el2.textContent = String(stats.today); });
+  document.querySelectorAll('[data-progress-before]').forEach(function (el2) { el2.textContent = String(stats.before); });
+  SECTION_IDS.forEach(function (id) {
+    var isDone = !!(data[id] && data[id].done);
+    var btn = document.querySelector('.progress-btn[data-section="' + id + '"]');
+    if (btn) {
+      btn.setAttribute('data-done', isDone ? 'true' : 'false');
+      btn.style.background = isDone ? 'var(--teal-soft)' : 'var(--bg-panel)';
+      btn.style.color = isDone ? 'var(--teal)' : 'var(--text-soft)';
+      btn.style.borderColor = isDone ? 'var(--teal)' : 'var(--border)';
+      var check = btn.querySelector('.check'); if (check) check.style.opacity = isDone ? '1' : '0';
+      var label = btn.querySelector('.label'); if (label) label.textContent = isDone ? 'Lu' : 'Marquer comme lu';
+    }
+    var navCheck = document.querySelector('.nav-check[data-section="' + id + '"]');
+    if (navCheck) navCheck.style.opacity = isDone ? '1' : '0';
+  });
+}
+document.querySelectorAll('.progress-btn').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    Courhub.progress.toggleSection(CHAPTER_ID, btn.getAttribute('data-section'));
+    renderProgress();
+  });
+});
+document.querySelectorAll('.progress-reset').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    if (confirm('Réinitialiser votre progression de lecture pour ce chapitre ?')) {
+      Courhub.progress.saveProgress(CHAPTER_ID, {});
+      renderProgress();
+    }
+  });
+});
+renderProgress();
+
+/* =========================================================================
+   PAGINATION (une section par écran, comme un diaporama)
+   ========================================================================= */
+Courhub.initPaginator(CHAPTER_ID, ['accueil'].concat(SECTION_IDS), {
+  articleId: 'content',
+  footerId: 'page-footer'
+});
+
+
+/* =========================================================================
+   CHART REVEAL ANIMATION
+   ========================================================================= */
+var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var chartObserver = new IntersectionObserver(function (entries) {
+  entries.forEach(function (entry) {
+    if (!entry.isIntersecting) return;
+    var card = entry.target;
+    card.classList.add('in-view');
+    var paths = card.querySelectorAll('.chart-path');
+    paths.forEach(function (p) {
+      var len = 0;
+      try { len = p.getTotalLength(); } catch (e) { len = 0; }
+      if (!len) return;
+      if (reduceMotion) { p.style.strokeDasharray = 'none'; return; }
+      p.style.strokeDasharray = len;
+      p.style.strokeDashoffset = len;
+      p.style.transition = 'none';
+      requestAnimationFrame(function () {
+        p.style.transition = 'stroke-dashoffset 1.1s ease';
+        p.style.strokeDashoffset = 0;
+      });
+    });
+    chartObserver.unobserve(card);
+  });
+}, { threshold: 0.2 });
+document.querySelectorAll('.chart-card').forEach(function (c) { chartObserver.observe(c); });
+</script>
+
+</body>
+</html>

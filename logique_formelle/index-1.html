@@ -165,6 +165,7 @@
         <li><a href="#sec-10" class="navlink block hover:text-ink text-inksoft py-0.5">10. Applications</a></li>
         <li><a href="#sec-11" class="navlink block hover:text-ink text-inksoft py-0.5">11. Ingrédients d'un système</a></li>
         <li><a href="#sec-12" class="navlink block hover:text-ink text-inksoft py-0.5">12. Logique &amp; langage naturel</a></li>
+        <li><a href="#sec-conversion-binaire" class="navlink block hover:text-ink text-inksoft py-0.5">13. Conversion binaire</a></li>
         <li><a href="#sec-plan" class="navlink block hover:text-ink text-inksoft py-0.5">Plan du cours</a></li>
         <li><a href="#sec-refs" class="navlink block hover:text-ink text-inksoft py-0.5">Références</a></li>
         <li><a href="#sec-exercices" class="navlink block hover:text-ink text-inksoft py-0.5">Exercices</a></li>
@@ -223,7 +224,7 @@
     <article id="reader-article" class="px-6 sm:px-10 lg:px-16 py-14 sm:py-16 max-w-3xl">
 
       <div class="flex items-center justify-between font-sans text-xs text-inksoft/60 mb-10 pb-4 border-b divider-rule">
-        <span>Section <span data-page-index>1</span> / <span data-page-total>17</span></span>
+        <span>Section <span data-page-index>1</span> / <span data-page-total>18</span></span>
         <a href="#accueil" class="hover:text-ink">← Retour au sommaire</a>
       </div>
 
@@ -766,6 +767,191 @@
         </div>
       </section>
 
+      <!-- CONVERSION BINAIRE (interactive) -->
+      <section id="sec-conversion-binaire" class="mb-16 scroll-mt-24">
+        <p class="section-num text-sm mb-2">13</p>
+        <h2 class="font-serif text-2xl sm:text-3xl mb-6">Comment un ordinateur écrit-il un nombre négatif&nbsp;?</h2>
+
+        <p class="mb-4 leading-relaxed">Un ordinateur n'a que deux symboles pour tout écrire&nbsp;: <span class="font-mono">0</span> et <span class="font-mono">1</span>. On appelle chaque 0 ou chaque 1 un <strong>bit</strong>. Écrire un nombre positif est facile&nbsp;: 5, ça donne <span class="font-mono">00000101</span>.</p>
+        <p class="mb-8 leading-relaxed text-inksoft">Mais un ordinateur n'a pas de touche « <span class="font-mono">-</span> » (moins) ! Alors comment écrit-il <strong>-5</strong> avec seulement des 0 et des 1&nbsp;? Il existe <strong>trois méthodes</strong>. Tape un nombre dans la case ci-dessous (entre -128 et 127, positif ou négatif) et regarde, étape par étape, comment chacune s'y prend. On utilise ici <strong>8 cases</strong> (8 bits) — comme le fait souvent un ordinateur pour ranger un petit nombre.</p>
+
+        <div class="border divider-rule rounded-sm p-5 sm:p-6 bg-panel mb-8">
+          <label for="bin-input" class="font-sans text-sm block mb-2 text-inksoft">Ton nombre (entier, entre -128 et 127)&nbsp;:</label>
+          <input id="bin-input" type="text" inputmode="numeric" autocomplete="off" placeholder="par exemple : -5" class="font-mono text-lg w-full sm:w-56 px-3 py-2 border divider-rule rounded-sm bg-paper text-ink focus:outline-none focus:border-gold">
+          <p id="bin-error" class="font-sans text-[13px] text-rust mt-3 hidden"></p>
+        </div>
+
+        <div id="bin-methods" class="space-y-8"></div>
+
+        <template id="bin-methods-empty">
+          <p class="font-sans text-[13px] text-inksoft/50 italic">Tape un nombre ci-dessus pour voir apparaître les trois méthodes, étape par étape.</p>
+        </template>
+
+        <script>
+        (function () {
+          var BITS = 8;
+          var input = document.getElementById('bin-input');
+          var errorEl = document.getElementById('bin-error');
+          var methodsEl = document.getElementById('bin-methods');
+          var emptyTpl = document.getElementById('bin-methods-empty');
+
+          function toUnsignedBits(value, bits) {
+            // value doit être un entier positif ou nul, plus petit que 2^bits
+            var s = value.toString(2);
+            while (s.length < bits) s = '0' + s;
+            return s;
+          }
+
+          function invert(bitString) {
+            var out = '';
+            for (var i = 0; i < bitString.length; i++) out += bitString[i] === '0' ? '1' : '0';
+            return out;
+          }
+
+          function addOneWithCarry(bitString) {
+            var bits = bitString.split('');
+            var steps = [];
+            var carry = 1;
+            for (var i = bits.length - 1; i >= 0 && carry; i--) {
+              var before = Number(bits[i]);
+              var sum = before + carry;
+              var newBit = sum % 2;
+              var newCarry = sum >= 2 ? 1 : 0;
+              steps.push({ position: i, before: before, sum: sum, after: newBit, carryOut: newCarry });
+              bits[i] = String(newBit);
+              carry = newCarry;
+            }
+            return { result: bits.join(''), steps: steps };
+          }
+
+          function bitBoxes(bitString, highlightFrom) {
+            var html = '<div class="flex gap-1 font-mono text-base">';
+            for (var i = 0; i < bitString.length; i++) {
+              var changed = typeof highlightFrom === 'string' && highlightFrom[i] !== bitString[i];
+              html += '<span class="w-7 h-8 flex items-center justify-center border rounded-sm ' +
+                (changed ? 'border-gold bg-goldsoft text-ink' : 'border-rule bg-paper text-ink') + '">' + bitString[i] + '</span>';
+            }
+            return html + '</div>';
+          }
+
+          function panel(title, subtitle, stepsHtml) {
+            return '<div class="border divider-rule rounded-sm p-5 sm:p-6">' +
+              '<p class="font-sans text-[11px] tracking-wide text-gold/90 mb-1">' + title + '</p>' +
+              '<p class="font-sans text-[13px] text-inksoft/70 mb-4">' + subtitle + '</p>' +
+              '<ol class="space-y-4">' + stepsHtml + '</ol>' +
+              '</div>';
+          }
+
+          function step(text, bitsHtml) {
+            return '<li class="font-sans text-[14px] leading-relaxed">' +
+              '<p class="mb-1.5">' + text + '</p>' +
+              (bitsHtml || '') +
+              '</li>';
+          }
+
+          function render(n) {
+            var abs = Math.abs(n);
+            var absBits = toUnsignedBits(abs, BITS - 1); // 7 bits pour la valeur, 1 bit réservé au signe
+
+            /* ---------- Méthode 1 : signe et valeur absolue ---------- */
+            var m1steps = '';
+            m1steps += step('On regarde si ' + n + ' est négatif ou non.', '');
+            var signBit = n < 0 ? '1' : '0';
+            m1steps += step(
+              n < 0
+                ? 'Comme ' + n + ' est négatif, on met un <strong>1</strong> tout au début de la case, pour dire « c\'est un nombre négatif ».'
+                : 'Comme ' + n + ' est positif (ou zéro), on met un <strong>0</strong> tout au début, pour dire « c\'est un nombre positif ».',
+              ''
+            );
+            var m1result = signBit + absBits;
+            var m1overflow = abs > 127;
+            if (m1overflow) {
+              m1steps += step('Problème : la valeur ' + abs + ' est trop grande pour tenir dans les 7 cases qui restent (elle ne peut aller que de 0 à 127 avec cette méthode). On ne peut donc pas écrire ' + n + ' comme ça.', '');
+            } else {
+              m1steps += step('On écrit ensuite la valeur absolue de ' + n + ' (c\'est-à-dire ' + abs + ', sans son signe) en binaire normal, sur les 7 cases restantes.', bitBoxes(absBits));
+              m1steps += step('On colle le bit de signe devant : résultat final.', bitBoxes(m1result));
+            }
+
+            /* ---------- Méthode 2 : complément à 1 (on inverse) ---------- */
+            var fullBits = toUnsignedBits(abs, BITS);
+            var m2steps = '';
+            var m2overflow = abs > 127;
+            m2steps += step('On écrit d\'abord la valeur absolue de ' + n + ' (donc ' + abs + ') en binaire normal, sur les 8 cases.', bitBoxes(fullBits));
+            var m2result;
+            if (m2overflow) {
+              m2steps += step('Problème : ' + abs + ' est trop grand pour tenir sur 8 cases avec cette méthode (elle va seulement de -127 à 127). On ne peut donc pas écrire ' + n + ' comme ça.', '');
+              m2result = null;
+            } else if (n < 0) {
+              var inverted = invert(fullBits);
+              m2steps += step('Comme ' + n + ' est négatif, on <strong>inverse chaque case</strong>&nbsp;: chaque 0 devient un 1, et chaque 1 devient un 0.', bitBoxes(inverted, fullBits));
+              m2result = inverted;
+              m2steps += step('Résultat final (les cases qui ont changé sont en couleur).', bitBoxes(m2result));
+            } else {
+              m2steps += step('Comme ' + n + ' est déjà positif (ou zéro), on n\'a rien d\'autre à faire !', '');
+              m2result = fullBits;
+            }
+
+            /* ---------- Méthode 3 : complément à 2 (on inverse, puis +1) ---------- */
+            var m3steps = '';
+            m3steps += step('On repart de la même valeur absolue de ' + n + ' en binaire normal, sur 8 cases.', bitBoxes(fullBits));
+            var m3result;
+            if (n < 0) {
+              var inverted3 = invert(fullBits);
+              m3steps += step('Comme ' + n + ' est négatif, on inverse chaque case, exactement comme dans la méthode 2.', bitBoxes(inverted3, fullBits));
+              var addRes = addOneWithCarry(inverted3);
+              var carryText = 'Puis on <strong>ajoute 1</strong> à ce résultat, comme une addition à l\'école&nbsp;: on part de la dernière case à droite. ';
+              if (addRes.steps.length > 1) {
+                carryText += 'Il y a eu ' + (addRes.steps.length - 1) + ' « retenue(s) » qui se sont propagées vers la gauche (comme quand 1 + 1 = 10 en binaire, on écrit 0 et on retient 1 pour la case d\'à côté).';
+              } else {
+                carryText += 'Cette fois il n\'y a pas eu besoin de retenue.';
+              }
+              m3steps += step(carryText, bitBoxes(addRes.result, inverted3));
+              m3result = addRes.result;
+              m3steps += step('Résultat final.', bitBoxes(m3result));
+            } else {
+              m3steps += step('Comme ' + n + ' est déjà positif (ou zéro), on n\'a rien d\'autre à faire !', '');
+              m3result = fullBits;
+            }
+
+            methodsEl.innerHTML =
+              panel('Méthode 1 — Signe et valeur absolue', 'On réserve la toute première case juste pour dire si le nombre est négatif ou pas.', m1steps) +
+              panel('Méthode 2 — Complément à 1', 'Si le nombre est négatif, on inverse tous les 0 et tous les 1.', m2steps) +
+              panel('Méthode 3 — Complément à 2', 'Comme la méthode 2, mais on ajoute 1 à la fin. C\'est celle qu\'utilisent presque tous les ordinateurs aujourd\'hui.', m3steps);
+          }
+
+          function showEmpty() {
+            methodsEl.innerHTML = '';
+            methodsEl.appendChild(emptyTpl.content.cloneNode(true));
+          }
+
+          function handleInput() {
+            // on n'autorise que des chiffres, et un seul signe "-" tout au début
+            var cleaned = input.value.replace(/[^0-9-]/g, '');
+            var neg = cleaned.charAt(0) === '-';
+            cleaned = cleaned.replace(/-/g, '');
+            if (neg) cleaned = '-' + cleaned;
+            if (cleaned !== input.value) input.value = cleaned;
+
+            errorEl.classList.add('hidden');
+
+            if (cleaned === '' || cleaned === '-') { showEmpty(); return; }
+
+            var n = parseInt(cleaned, 10);
+            if (isNaN(n) || n < -128 || n > 127) {
+              errorEl.textContent = 'Choisis un nombre entier entre -128 et 127, pour qu\'il tienne dans 8 cases.';
+              errorEl.classList.remove('hidden');
+              showEmpty();
+              return;
+            }
+            render(n);
+          }
+
+          input.addEventListener('input', handleInput);
+          showEmpty();
+        })();
+        </script>
+      </section>
+
       <!-- PLAN DU COURS -->
       <section id="sec-plan" class="mb-16 scroll-mt-24">
         <p class="font-sans text-[11px] tracking-wide text-inksoft/50 mb-2">La suite du cours</p>
@@ -978,7 +1164,7 @@
           <p class="text-inksoft/50 text-[11px] mb-2">Mise en page</p>
           <p class="mb-1">Nour Yahyaoui</p>
           <a href="https://github.com/nour-yahyaoui" class="inline-link underline text-inksoft/70 block">github.com/nour-yahyaoui</a>
-          <a href="https://nour-yahyaoui.vercel.app" class="inline-link underline text-inksoft/70 block">nour-yahyaoui.vercel.app</a>
+          <a href="https://nour-yahyaoui.github.io" class="inline-link underline text-inksoft/70 block">nour-yahyaoui.vercel.app</a>
         </div>
       </div>
       <p class="text-inksoft/40 text-xs border-t divider-rule pt-6 max-w-3xl">Notes de cours à usage pédagogique, établies à partir du support « Logiques formelles » de Mme Hager Elkamel — FSM de Monastir.</p>
@@ -1007,7 +1193,7 @@
 <script>
   const CH_SECTIONS = [
     'sec-1','sec-2','sec-3','sec-4','sec-5','sec-6','sec-modelisation',
-    'sec-7','sec-8','sec-exemples','sec-9','sec-10','sec-11','sec-12',
+    'sec-7','sec-8','sec-exemples','sec-9','sec-10','sec-11','sec-12','sec-conversion-binaire',
     'sec-plan','sec-refs','sec-exercices'
   ];
   Courhub.initReader('logique-formelle-ch1', CH_SECTIONS);
