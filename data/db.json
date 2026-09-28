@@ -13,24 +13,78 @@
           "title": "Chapitre 1 — Introduction à la logique",
           "path": "logique_formelle/index-1.html",
           "sections": [
-            { "id": "sec-1", "title": "La logique" },
-            { "id": "sec-2", "title": "Le raisonnement" },
-            { "id": "sec-3", "title": "Le but de la logique" },
-            { "id": "sec-4", "title": "Pourquoi la logique ?" },
-            { "id": "sec-5", "title": "La démarche de la logique" },
-            { "id": "sec-6", "title": "Types de logique" },
-            { "id": "sec-modelisation", "title": "Traduire en formules" },
-            { "id": "sec-7", "title": "Modus Ponens" },
-            { "id": "sec-8", "title": "Modus Tollens" },
-            { "id": "sec-exemples", "title": "Valide ou invalide ?" },
-            { "id": "sec-9", "title": "Les outils de la logique" },
-            { "id": "sec-10", "title": "Applications" },
-            { "id": "sec-11", "title": "Ingrédients d'un système" },
-            { "id": "sec-12", "title": "Logique & langage naturel" },
-            { "id": "sec-conversion-binaire", "title": "Conversion binaire" },
-            { "id": "sec-plan", "title": "Plan du cours" },
-            { "id": "sec-refs", "title": "Références" },
-            { "id": "sec-exercices", "title": "Exercices" }
+            {
+              "id": "sec-1",
+              "title": "La logique"
+            },
+            {
+              "id": "sec-2",
+              "title": "Le raisonnement"
+            },
+            {
+              "id": "sec-3",
+              "title": "Le but de la logique"
+            },
+            {
+              "id": "sec-4",
+              "title": "Pourquoi la logique ?"
+            },
+            {
+              "id": "sec-5",
+              "title": "La démarche de la logique"
+            },
+            {
+              "id": "sec-6",
+              "title": "Types de logique"
+            },
+            {
+              "id": "sec-modelisation",
+              "title": "Traduire en formules"
+            },
+            {
+              "id": "sec-7",
+              "title": "Modus Ponens"
+            },
+            {
+              "id": "sec-8",
+              "title": "Modus Tollens"
+            },
+            {
+              "id": "sec-exemples",
+              "title": "Valide ou invalide ?"
+            },
+            {
+              "id": "sec-9",
+              "title": "Les outils de la logique"
+            },
+            {
+              "id": "sec-10",
+              "title": "Applications"
+            },
+            {
+              "id": "sec-11",
+              "title": "Ingrédients d'un système"
+            },
+            {
+              "id": "sec-12",
+              "title": "Logique & langage naturel"
+            },
+            {
+              "id": "sec-conversion-binaire",
+              "title": "Conversion binaire"
+            },
+            {
+              "id": "sec-plan",
+              "title": "Plan du cours"
+            },
+            {
+              "id": "sec-refs",
+              "title": "Références"
+            },
+            {
+              "id": "sec-exercices",
+              "title": "Exercices"
+            }
           ]
         }
       ]
@@ -48,10 +102,72 @@
           "title": "Chapitre 1 — Théorie et traitement des signaux",
           "path": "technologies_multimedias/index-1.html",
           "sections": [
-            { "id": "sec-1", "title": "Introduction" },
-            { "id": "sec-2", "title": "Classification des signaux" },
-            { "id": "sec-3", "title": "Signaux particuliers" },
-            { "id": "sec-4", "title": "Propriétés des signaux" }
+            {
+              "id": "sec-1",
+              "title": "Introduction"
+            },
+            {
+              "id": "sec-2",
+              "title": "Classification des signaux"
+            },
+            {
+              "id": "sec-3",
+              "title": "Signaux particuliers"
+            },
+            {
+              "id": "sec-4",
+              "title": "Propriétés des signaux"
+            }
+          ]
+        }
+      ],
+      "tps": [
+        {
+          "id": "technologies-multimedias-tp1",
+          "title": "TP 1 — Prise en main de MATLAB et représentation des signaux",
+          "path": "technologies_multimedias/tp-1.html",
+          "duration": "3 heures",
+          "sections": [
+            {
+              "id": "sec-obj",
+              "title": "Objectifs"
+            },
+            {
+              "id": "sec-p1",
+              "title": "Découverte de MATLAB"
+            },
+            {
+              "id": "sec-p2",
+              "title": "Premières fonctions MATLAB"
+            },
+            {
+              "id": "sec-p3",
+              "title": "Création d'un vecteur"
+            },
+            {
+              "id": "sec-p4",
+              "title": "Premier signal"
+            },
+            {
+              "id": "sec-p5",
+              "title": "Amélioration du graphique"
+            },
+            {
+              "id": "sec-p6",
+              "title": "Génération d'un signal sinusoïdal"
+            },
+            {
+              "id": "sec-p7",
+              "title": "Plusieurs signaux"
+            },
+            {
+              "id": "sec-p8",
+              "title": "Signaux particuliers"
+            },
+            {
+              "id": "sec-p9",
+              "title": "Bilan du TP"
+            }
           ]
         }
       ]

@@ -117,15 +117,16 @@
       const allChapters = [];
 
       (db.subjects || []).forEach((subject, i) => {
-        allChapters.push(...subject.chapters);
+        allChapters.push(...subject.chapters, ...(subject.tps || []));
         const accent = ACCENTS[i % ACCENTS.length];
 
         const block = document.createElement('section');
-        const cards = subject.chapters.map(ch => {
+        const makeCard = (ch, kind) => {
           const data = Courhub.progress.getProgress(ch.id);
           const stats = Courhub.progress.computeStats(data, (ch.sections || []).length);
           return `
             <a href="${ch.path}" class="card group block border divider-rule rounded-sm p-5 sm:p-6">
+              <p class="font-sans text-[11px] tracking-wide ${accent.text} mb-2">${kind}${ch.duration ? ' · ' + ch.duration : ''}</p>
               <div class="flex items-start justify-between gap-3 mb-3">
                 <h3 class="font-serif text-lg leading-snug">${ch.title}</h3>
                 <span class="arrow font-sans text-inksoft/40 shrink-0 mt-1">→</span>
@@ -133,7 +134,12 @@
               <div class="ch-progress-track mb-2"><div class="ch-progress-fill" style="width:${stats.pct}%"></div></div>
               <p class="font-sans text-xs text-inksoft/70">${stats.done}/${stats.total} sections · ${stats.pct}%${stats.pct === 100 ? ' · terminé' : ''}</p>
             </a>`;
-        }).join('');
+        };
+        const cards = subject.chapters.map(ch => makeCard(ch, 'Cours')).join('');
+        const tps = subject.tps || [];
+        const tpBlock = tps.length ? `
+          <h3 class="font-sans text-[13px] tracking-wide text-inksoft/70 mt-8 mb-3">Travaux pratiques</h3>
+          <div class="grid sm:grid-cols-2 gap-4">${tps.map(tp => makeCard(tp, 'TP')).join('')}</div>` : '';
 
         block.innerHTML = `
           <div class="flex items-center gap-3 mb-4">
@@ -143,7 +149,7 @@
               <p class="font-sans text-inksoft/60 text-xs truncate">${subject.institution} · ${subject.level}</p>
             </div>
           </div>
-          <div class="grid sm:grid-cols-2 gap-4">${cards}</div>`;
+          <div class="grid sm:grid-cols-2 gap-4">${cards}</div>${tpBlock}`;
         subjectsEl.appendChild(block);
       });
 
