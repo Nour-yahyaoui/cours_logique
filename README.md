@@ -29,6 +29,7 @@ tout est stocké chez toi, dans ton navigateur.
 - 🌓 **Thème clair / sombre** — au choix, mémorisé d'une visite à l'autre.
 - 📊 **Suivi dans le temps** — un petit compteur distingue ce que tu as terminé aujourd'hui de ce que tu avais déjà fait avant.
 - 🧪 **Section TPs** — chaque matière peut avoir des travaux pratiques (`"tps"` dans `db.json`), avec questions, réponses sauvegardées dans le navigateur et corrections dépliables.
+- 📚 **Ressources** — page `ressources.html` : options légales pour obtenir MATLAB (ou Octave), documentation, cours gratuits et vidéos YouTube intégrées (chargées seulement au clic).
 - 🧩 **Extensible sans backend** — les matières et chapitres sont listés dans `data/db.json` ; ajouter un cours ne demande pas de toucher au code de la page d'accueil.
 - 🤖 **Prompt réutilisable** — `prompt.md` contient un prompt prêt à l'emploi pour convertir un nouveau PDF de cours en chapitre CourHub, dans les mêmes conventions.
 - ⚡ **Zéro dépendance lourde** — HTML + Tailwind (via CDN) + JavaScript vanilla. Pas de framework, pas d'étape de build.
@@ -55,6 +56,7 @@ tout est stocké chez toi, dans ton navigateur.
 ├── technologies_multimedias/
 │   ├── index-1.html                  ← Technologies Multimédias, chapitre 1
 │   └── tp-1.html                     ← Technologies Multimédias, TP 1 (MATLAB)
+├── ressources.html                   ← ressources MATLAB : obtenir MATLAB/Octave, docs, cours, vidéos
 ├── prompt.md                         ← prompt à réutiliser pour convertir un futur PDF en chapitre
 ├── .gitattributes                    ← force des fins de ligne LF cohérentes
 └── .nojekyll                         ← désactive le traitement Jekyll de GitHub Pages

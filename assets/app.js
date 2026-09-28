@@ -209,10 +209,58 @@
     render(currentFromLocation(), false);
   }
 
+  // ============ YouTube (chargement à la demande) ============
+  // <div data-yt="ID_VIDEO" data-yt-title="..."></div>  ou  data-yt-list="ID_PLAYLIST".
+  // Rien n'est chargé depuis YouTube tant que l'on n'a pas cliqué sur « Lire ».
+  function initYouTube(root) {
+    (root || document).querySelectorAll('[data-yt],[data-yt-list]').forEach(function (box) {
+      if (box.getAttribute('data-yt-ready')) return;
+      box.setAttribute('data-yt-ready', '1');
+      var vid = box.getAttribute('data-yt');
+      var list = box.getAttribute('data-yt-list');
+      var title = box.getAttribute('data-yt-title') || 'Vidéo YouTube';
+      var watchUrl = vid ? 'https://www.youtube.com/watch?v=' + encodeURIComponent(vid)
+                         : 'https://www.youtube.com/playlist?list=' + encodeURIComponent(list);
+      var embedUrl = vid ? 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(vid) + '?rel=0&autoplay=1'
+                         : 'https://www.youtube-nocookie.com/embed/videoseries?list=' + encodeURIComponent(list) + '&rel=0&autoplay=1';
+
+      var frame = document.createElement('div');
+      frame.className = 'yt-frame';
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'yt-play';
+      btn.innerHTML = '<span class="yt-title"></span><span class="yt-hint">Lire ici (charge YouTube)</span>';
+      btn.querySelector('.yt-title').textContent = title;
+      btn.addEventListener('click', function () {
+        var f = document.createElement('iframe');
+        f.src = embedUrl;
+        f.title = title;
+        f.loading = 'lazy';
+        f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen';
+        f.allowFullscreen = true;
+        f.referrerPolicy = 'strict-origin-when-cross-origin';
+        frame.innerHTML = '';
+        frame.appendChild(f);
+      });
+      frame.appendChild(btn);
+
+      var link = document.createElement('a');
+      link.href = watchUrl;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.className = 'yt-open';
+      link.textContent = 'Ouvrir sur YouTube (si la lecture ici ne marche pas)';
+
+      box.appendChild(frame);
+      box.appendChild(link);
+    });
+  }
+
   window.Courhub = {
     initTheme,
     initReader,
     initPaginator,
+    initYouTube,
     progress: { getProgress, saveProgress, toggleSection, computeStats, computeOverallStats, progressKey },
   };
 })();

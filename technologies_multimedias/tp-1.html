@@ -159,6 +159,15 @@
   .num-in { font-family: 'JetBrains Mono', monospace; width: 5.5rem; padding: 4px 8px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 2px; }
   .corr { background: var(--teal-soft); border: 1px solid var(--teal); border-radius: 2px; padding: 8px 12px; font-family: Inter, sans-serif; font-size: 14px; margin: 8px 0 0; }
   .tool-card { border: 1px solid var(--border); border-radius: 2px; padding: 14px; margin: 18px 0 22px; background: var(--bg); }
+  .yt-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; border: 1px solid var(--border); border-radius: 2px; background: var(--hero-bg); overflow: hidden; }
+  .yt-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .yt-play { position: absolute; inset: 0; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 16px; background: transparent; color: var(--hero-text); cursor: pointer; border: 0; text-align: center; }
+  .yt-play:hover .yt-hint { border-color: var(--gold); color: var(--gold); }
+  .yt-title { font-family: 'Source Serif 4', Georgia, serif; font-size: 18px; line-height: 1.3; }
+  .yt-hint { font-family: Inter, sans-serif; font-size: 12px; padding: 5px 12px; border: 1px solid var(--hero-border); border-radius: 999px; }
+  .yt-open { display: inline-block; margin-top: 6px; font-family: Inter, sans-serif; font-size: 12px; text-decoration: underline; color: var(--text-soft); }
+  .doc-link { font-family: Inter, sans-serif; font-size: 13px; margin: 6px 0 16px; color: var(--text-soft); }
+  .doc-link a { text-decoration: underline; text-underline-offset: 3px; color: var(--text); }
   .tool-card .lbl { font-family: Inter, sans-serif; font-size: 12px; color: var(--text-soft); }
 </style>
 </head>
@@ -207,7 +216,7 @@
     </div>
 
     <nav class="px-6 pb-16 font-sans text-[13px] leading-relaxed">
-      <a href="../index.html" class="inline-block mb-5 text-[12px] underline" style="color:var(--text-soft);">← Tous les cours</a>
+      <a href="../index.html" class="inline-block mb-1 text-[12px] underline" style="color:var(--text-soft);">← Tous les cours</a><br><a href="../ressources.html" class="inline-block mb-5 text-[12px] underline" style="color:var(--text-soft);">Ressources MATLAB</a>
       <div class="mb-6">
         <div class="flex items-center justify-between mb-2">
           <span class="progress-count text-[12px]" style="color:var(--text-soft);">0 / 0 sections lues</span>
@@ -300,12 +309,15 @@ var TP = [
   { t:'p', x:`À la fin de ce TP, l'étudiant doit être capable de :` },
   { t:'ul', x:[`identifier les principales fenêtres de MATLAB ;`,`créer des variables ;`,`effectuer des opérations simples ;`,`créer un vecteur temps ;`,`générer un signal mathématique ;`,`représenter graphiquement un signal ;`,`modifier les propriétés d'un graphique ;`,`générer plusieurs signaux ;`,`reconnaître visuellement certains signaux particuliers ;`,`étudier graphiquement quelques propriétés d'un signal.`] },
   { t:'p', x:`Le TP constitue également une première introduction aux fonctions MATLAB qui seront utilisées dans les TP suivants.` },
+  { t:'res' },
   { t:'note', x:`Durée prévue : 3 heures. Pas de MATLAB sous la main ? Les aperçus et les petits outils interactifs de cette page te montrent le résultat attendu. Tes réponses sont enregistrées dans ce navigateur, et chaque question a sa correction.` }
 ]},
 { id:'sec-p1', num:'Partie 1', nav:'1. Découverte de MATLAB', title:'Découverte de MATLAB', blocks:[
   { t:'h', x:`1.1 Lancement de MATLAB` },
   { t:'p', x:`Lancer MATLAB. Observer l'interface principale. Identifier les éléments suivants :` },
   { t:'ul', x:[`Command Window`,`Workspace`,`Current Folder`,`Command History`,`fenêtre Figure`] },
+  { t:'p', x:`Avant de commencer, cette vidéo officielle de MathWorks (environ 10 minutes) montre exactement ces fenêtres :` },
+  { t:'yt', id:'OHxR8iMHDWw', title:'Getting Started with MATLAB (MathWorks)' },
   { t:'h', x:`Travail demandé` },
   { t:'p', x:`Dans la <strong>Command Window</strong>, saisir successivement :` },
   { t:'code', x:`2+3\n10-4\n5*6\n20/4\n2^3` },
@@ -366,6 +378,7 @@ var TP = [
   { t:'code', x:`x = sin(t);` },
   { t:'p', x:`Pour afficher le signal :` },
   { t:'code', x:`plot(t,x)` },
+  { t:'doc', x:`Documentation : <a href="https://www.mathworks.com/help/matlab/ref/plot.html" target="_blank" rel="noopener">plot</a>. Dans MATLAB, ${K('doc plot')} ouvre la même page.` },
   { t:'p', x:`Une fenêtre <strong>Figure</strong> apparaît. Voici à quoi elle ressemble :` },
   { t:'plot', cap:`Aperçu de ${K('plot(t,x)')} (sans titre ni légendes)`, cfg:{ xmin:0, xmax:2*Math.PI, ymin:-1.2, ymax:1.2, xticks:[{v:0,l:'0'},{v:Math.PI,l:'π'},{v:2*Math.PI,l:'2π'}], yticks:[{v:-1,l:'-1'},{v:0,l:'0'},{v:1,l:'1'}], series:[{fn:Math.sin}] } }
 ]},
@@ -415,6 +428,7 @@ var TP = [
   { t:'code', x:`plot(t,x1)\nhold on\nplot(t,x2)\nhold off\ngrid on\nlegend('sinus','cosinus')` },
   { t:'h', x:`Nouvelles fonctions` },
   { t:'code', x:`hold on\nhold off\nlegend()` },
+  { t:'doc', x:`Documentation : <a href="https://www.mathworks.com/help/matlab/creating_plots/using-high-level-plotting-functions.html" target="_blank" rel="noopener">Create 2-D Line Plot</a> (${K('hold on')} / ${K('hold off')}).` },
   { t:'p', x:`Voici le résultat (tu peux aussi changer la fréquence) :` },
   { t:'live', k:'both' },
   { t:'q', title:'Questions', items:[
@@ -634,6 +648,9 @@ function renderBlock(b, secId, bi) {
     case 'plot': return plotBlock(b);
     case 'live': return liveBlock(b);
     case 'colon': return colonBlock();
+    case 'doc':  return el('p', { class: 'doc-link', html: b.x });
+    case 'res':  return el('p', { class: 'doc-link', html: `Pas de MATLAB ? Voir <a href="../ressources.html#obtenir">comment l'obtenir (ou l'alternative gratuite Octave)</a>, la <a href="../ressources.html#docs">documentation</a> et des <a href="../ressources.html#videos">vidéos</a>.` });
+    case 'yt':   { var box = el('div', { class: 'my-5' }); box.setAttribute('data-yt', b.id); box.setAttribute('data-yt-title', b.title); return box; }
     case 'q':    return questionBlock(b, secId, bi);
   }
   return document.createTextNode('');
@@ -678,6 +695,9 @@ content.appendChild(el('div', { class: 'flex items-center justify-between gap-4 
     el('span', { 'data-page-nav-label': '', class: 'block' })
   ])
 ]));
+
+/* Vidéos YouTube (chargées au clic) */
+Courhub.initYouTube(content);
 
 /* Thème (assets/app.js) */
 Courhub.initTheme();

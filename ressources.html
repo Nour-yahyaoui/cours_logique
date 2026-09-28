@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CourHub — Ressources MATLAB</title>
+<meta name="description" content="Ressources MATLAB pour les TP : comment obtenir MATLAB (ou une alternative gratuite), documentation, cours et vidéos.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⊢</text></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="assets/theme.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: { extend: {
+      colors: {
+        ink: '#16233F', inksoft: '#3E4C6B', paper: '#FBFAF6', panel: '#F1EEE5',
+        rule: '#DAD2BE', gold: '#A9822B', goldsoft: '#F0E6C8',
+        teal: '#2C5A57', tealsoft: '#E3EEEC', rust: '#9C4A3A', rustsoft: '#F3E3DE',
+      },
+      fontFamily: {
+        serif: ['"Source Serif 4"', 'Georgia', 'serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+      },
+    } }
+  }
+</script>
+<style>
+  body { background: #FBFAF6; }
+  .divider-rule { border-color: #DAD2BE; }
+
+  .card { transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease; }
+  .card:hover { border-color: #A9822B; transform: translateY(-2px); box-shadow: 0 8px 20px -12px rgba(22,35,63,.25); }
+  html[data-theme="dark"] .card:hover { box-shadow: 0 8px 20px -12px rgba(0,0,0,.5); }
+  .card .arrow { transition: transform .18s ease; }
+  .card:hover .arrow { transform: translateX(3px); }
+
+  .gh-btn { transition: border-color .15s ease, color .15s ease; }
+  .gh-btn:hover { border-color: #A9822B; color: #A9822B; }
+  html[data-theme="dark"] .gh-btn:hover { color: #DCB863; }
+
+  .monogram { font-family: 'Source Serif 4', serif; font-style: italic; }
+</style>
+</head>
+<body class="font-serif text-ink antialiased">
+<header class="border-b divider-rule">
+  <div class="max-w-5xl mx-auto px-6 sm:px-10 py-6 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2"><span class="font-mono text-gold text-xl">⊢</span><span class="font-sans font-semibold text-sm tracking-tight">CourHub</span></a>
+    <div class="flex items-center gap-3">
+      <a href="index.html" class="gh-btn font-sans text-xs px-3 py-1.5 border divider-rule rounded-sm text-inksoft">← Mes cours</a>
+      <button data-theme-toggle aria-label="Basculer le thème" class="theme-toggle"><span class="moon">🌙</span><span class="sun">☀️</span></button>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-5xl mx-auto px-6 sm:px-10 py-14 sm:py-16">
+  <p class="font-sans text-[13px] tracking-wide text-gold/90 mb-3">Ressources</p>
+  <h1 class="font-serif text-3xl sm:text-4xl leading-[1.15] mb-3">MATLAB : où le trouver, comment l'apprendre</h1>
+  <p class="font-sans text-inksoft text-[15px] max-w-xl mb-6">Tout ce qu'il faut pour faire les TP de Technologies Multimédias, y compris si tu n'as pas de licence.</p>
+  <nav class="font-sans text-[13px] flex flex-wrap gap-x-5 gap-y-2 mb-12">
+    <a href="#obtenir" class="underline underline-offset-4">Obtenir MATLAB</a>
+    <a href="#docs" class="underline underline-offset-4">Documentation</a>
+    <a href="#apprendre" class="underline underline-offset-4">Cours gratuits</a>
+    <a href="#videos" class="underline underline-offset-4">Vidéos</a>
+  </nav>
+
+  <section id="obtenir" class="mb-14 scroll-mt-8">
+    <h2 class="font-serif text-2xl mb-2">Obtenir MATLAB</h2>
+    <p class="font-sans text-[14px] text-inksoft max-w-2xl mb-6">Il n'existe pas de « community edition » de MATLAB à télécharger gratuitement : MathWorks indique que la version de base n'existe que dans MATLAB Online. Pas de lien de téléchargement direct non plus : il faut un compte MathWorks et une licence ou un essai. Voici les vraies options.</p>
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div class="border divider-rule rounded-sm p-5 flex flex-col">
+        <p class="font-sans text-[11px] tracking-wide text-gold/90 mb-1">GRATUIT · DANS LE NAVIGATEUR</p>
+        <h3 class="font-serif text-lg leading-snug mb-2">MATLAB Online (version de base)</h3>
+        <p class="font-sans text-[13.5px] text-inksoft leading-relaxed mb-4 flex-1">20 heures par mois, sans rien installer. La session s'arrête après 15 minutes d'inactivité, et il faut un compte MathWorks. Suffisant pour les TP de base.</p>
+        <a href="https://www.mathworks.com/products/matlab-online/matlab-online-versions.html" target="_blank" rel="noopener" class="gh-btn self-start font-sans text-xs px-3 py-1.5 border divider-rule rounded-sm text-inksoft">Voir MATLAB Online</a>
+      </div>
+      <div class="border divider-rule rounded-sm p-5 flex flex-col">
+        <p class="font-sans text-[11px] tracking-wide text-gold/90 mb-1">GRATUIT · TEMPORAIRE</p>
+        <h3 class="font-serif text-lg leading-snug mb-2">Essai de 30 jours</h3>
+        <p class="font-sans text-[13.5px] text-inksoft leading-relaxed mb-4 flex-1">La version complète sur ton ordinateur pendant 30 jours. Utile si tu dois faire beaucoup de TP en peu de temps.</p>
+        <a href="https://www.mathworks.com/campaigns/products/trials.html" target="_blank" rel="noopener" class="gh-btn self-start font-sans text-xs px-3 py-1.5 border divider-rule rounded-sm text-inksoft">Demander l'essai</a>
+      </div>
+      <div class="border divider-rule rounded-sm p-5 flex flex-col">
+        <p class="font-sans text-[11px] tracking-wide text-gold/90 mb-1">VIA TON ÉTABLISSEMENT</p>
+        <h3 class="font-serif text-lg leading-snug mb-2">Licence de campus</h3>
+        <p class="font-sans text-[13.5px] text-inksoft leading-relaxed mb-4 flex-1">Si ta faculté a une licence campus, tu peux télécharger MATLAB avec ton adresse e-mail universitaire. Demande à ton enseignant ou au service informatique si la FSM en a une : je ne peux pas le confirmer.</p>
+        <a href="https://www.mathworks.com/products/matlab.html" target="_blank" rel="noopener" class="gh-btn self-start font-sans text-xs px-3 py-1.5 border divider-rule rounded-sm text-inksoft">Vérifier mon accès</a>
+      </div>
+      <div class="border divider-rule rounded-sm p-5 flex flex-col">
+        <p class="font-sans text-[11px] tracking-wide text-gold/90 mb-1">GRATUIT · OPEN SOURCE</p>
+        <h3 class="font-serif text-lg leading-snug mb-2">GNU Octave</h3>
+        <p class="font-sans text-[13.5px] text-inksoft leading-relaxed mb-4 flex-1">Une alternative libre, très proche de MATLAB (Windows, macOS, Linux). Les commandes de base du TP 1 (variables, vecteurs, plot, hold on, legend) s'écrivent de la même façon.</p>
+        <a href="https://octave.org/download" target="_blank" rel="noopener" class="gh-btn self-start font-sans text-xs px-3 py-1.5 border divider-rule rounded-sm text-inksoft">Télécharger Octave</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="docs" class="mb-14 scroll-mt-8">
+    <h2 class="font-serif text-2xl mb-2">Documentation officielle</h2>
+    <ul class="max-w-2xl mt-4">
+        <li class="py-3 border-b divider-rule last:border-b-0">
+          <a href="https://www.mathworks.com/help/matlab/getting-started-with-matlab.html" target="_blank" rel="noopener" class="font-serif text-[16px] underline underline-offset-4 decoration-rule hover:decoration-gold">Get Started with MATLAB</a>
+          <p class="font-sans text-[13px] text-inksoft/80 mt-0.5">Le guide de démarrage : environnement, scripts, aide.</p>
+        </li>
+        <li class="py-3 border-b divider-rule last:border-b-0">
+          <a href="https://www.mathworks.com/help/matlab/ref/plot.html" target="_blank" rel="noopener" class="font-serif text-[16px] underline underline-offset-4 decoration-rule hover:decoration-gold">plot — 2-D line plot</a>
+          <p class="font-sans text-[13px] text-inksoft/80 mt-0.5">La fonction du TP : syntaxe, couleurs, styles de ligne, exemples.</p>
+        </li>
+        <li class="py-3 border-b divider-rule last:border-b-0">
+          <a href="https://www.mathworks.com/help/matlab/creating_plots/using-high-level-plotting-functions.html" target="_blank" rel="noopener" class="font-serif text-[16px] underline underline-offset-4 decoration-rule hover:decoration-gold">Create 2-D Line Plot</a>
+          <p class="font-sans text-[13px] text-inksoft/80 mt-0.5">Comment tracer plusieurs courbes avec hold on / hold off.</p>
+        </li>
+        <li class="py-3 border-b divider-rule last:border-b-0">
+          <a href="https://www.mathworks.com/support/learn-with-matlab-tutorials.html" target="_blank" rel="noopener" class="font-serif text-[16px] underline underline-offset-4 decoration-rule hover:decoration-gold">MATLAB Tutorials (MathWorks)</a>
+          <p class="font-sans text-[13px] text-inksoft/80 mt-0.5">Tutoriels, vidéos courtes et exemples pas à pas.</p>
+        </li>
+    </ul>
+    <p class="font-sans text-[13px] text-inksoft/80 mt-4 max-w-2xl">Astuce : dans MATLAB, tape <code class="font-mono">doc plot</code> ou <code class="font-mono">help plot</code> dans la Command Window pour ouvrir l'aide de n'importe quelle fonction.</p>
+  </section>
+
+  <section id="apprendre" class="mb-14 scroll-mt-8">
+    <h2 class="font-serif text-2xl mb-2">Cours gratuits</h2>
+    <ul class="max-w-2xl mt-4">
+        <li class="py-3 border-b divider-rule last:border-b-0">
+          <a href="https://matlabacademy.mathworks.com/details/matlab-onramp/gettingstarted" target="_blank" rel="noopener" class="font-serif text-[16px] underline underline-offset-4 decoration-rule hover:decoration-gold">MATLAB Onramp</a>
+          <p class="font-sans text-[13px] text-inksoft/80 mt-0.5">Cours interactif gratuit d'environ 2 heures, avec exercices corrigés automatiquement. À faire en complément du TP 1.</p>
+        </li>
+        <li class="py-3 border-b divider-rule last:border-b-0">
+          <a href="https://matlabacademy.mathworks.com/details/signal-processing-onramp/signalprocessing" target="_blank" rel="noopener" class="font-serif text-[16px] underline underline-offset-4 decoration-rule hover:decoration-gold">Signal Processing Onramp</a>
+          <p class="font-sans text-[13px] text-inksoft/80 mt-0.5">Analyse spectrale et filtrage : la suite logique une fois le chapitre sur les signaux compris.</p>
+        </li>
+        <li class="py-3 border-b divider-rule last:border-b-0">
+          <a href="https://matlabacademy.mathworks.com/" target="_blank" rel="noopener" class="font-serif text-[16px] underline underline-offset-4 decoration-rule hover:decoration-gold">MATLAB Academy</a>
+          <p class="font-sans text-[13px] text-inksoft/80 mt-0.5">Tous les cours en ligne de MathWorks.</p>
+        </li>
+    </ul>
+  </section>
+
+  <section id="videos" class="mb-14 scroll-mt-8">
+    <h2 class="font-serif text-2xl mb-2">Vidéos</h2>
+    <p class="font-sans text-[14px] text-inksoft max-w-2xl mb-6">Les vidéos ne se chargent qu'au clic (aucune donnée n'est envoyée à YouTube avant). Chaque vidéo a aussi un lien direct vers YouTube.</p>
+    <div class="grid md:grid-cols-2 gap-8">
+      <div>
+        <p class="font-sans text-[11px] tracking-wide text-gold/90 mb-2">MATHWORKS · ~10 MIN</p>
+        <div data-yt="OHxR8iMHDWw" data-yt-title="Getting Started with MATLAB"></div>
+        <p class="font-sans text-[13px] text-inksoft/80 mt-2">Une prise en main rapide : Command Window, Workspace, graphiques, documentation. Idéal avant le TP 1.</p>
+      </div>
+      <div>
+        <p class="font-sans text-[11px] tracking-wide text-gold/90 mb-2">CHAÎNE « MATLAB » · PLAYLIST DE 37 VIDÉOS</p>
+        <div data-yt-list="PL7CAABC40B2825C8B" data-yt-title="MATLAB Tutorials: Getting Started with MATLAB"></div>
+        <p class="font-sans text-[13px] text-inksoft/80 mt-2">La playlist officielle de démarrage : commandes, environnement, écrire un programme.</p>
+      </div>
+      <div>
+        <p class="font-sans text-[11px] tracking-wide text-gold/90 mb-2">ANISH TURLAPATY · PLAYLIST DE 24 VIDÉOS</p>
+        <div data-yt-list="PLuolQmYLOmvccNx0qx8yHZjDkqgxPQl83" data-yt-title="Signals & Systems using Matlab"></div>
+        <p class="font-sans text-[13px] text-inksoft/80 mt-2">Signaux et systèmes avec MATLAB : le même sujet que ton cours.</p>
+      </div>
+      <div>
+        <p class="font-sans text-[11px] tracking-wide text-gold/90 mb-2">SNUGGLYHAPPYMATHTIME · PLAYLIST DE 8 VIDÉOS</p>
+        <div data-yt-list="PLPhi9dVsEVfbNFWBDsgELOuKMob8qIr8S" data-yt-title="Plotting In MATLAB"></div>
+        <p class="font-sans text-[13px] text-inksoft/80 mt-2">Tout sur les graphiques : titres, axes, plusieurs courbes.</p>
+      </div>
+    </div>
+    <p class="font-sans text-[12px] text-inksoft/60 mt-6 max-w-2xl">Ces contenus appartiennent à leurs auteurs. Je n'ai pas pu vérifier que chaque vidéo autorise l'intégration : si une lecture échoue ici, le lien « Ouvrir sur YouTube » fonctionne.</p>
+  </section>
+</main>
+
+<footer class="border-t divider-rule">
+  <div class="max-w-5xl mx-auto px-6 sm:px-10 py-8 font-sans text-xs text-inksoft/70 flex flex-wrap gap-4 justify-between">
+    <span>Liens vérifiés en septembre 2026 : ils peuvent changer.</span>
+    <a href="https://github.com/nour-yahyaoui/cours_logique" target="_blank" rel="noopener" class="underline">Code source du projet</a>
+  </div>
+</footer>
+
+<script src="assets/app.js"></script>
+<script>
+  Courhub.initTheme();
+  Courhub.initYouTube();
+</script>
+</body>
+</html>
